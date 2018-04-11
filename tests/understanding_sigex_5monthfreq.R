@@ -2,19 +2,21 @@ library(sigex)
 library(mvtnorm)
 
 # ---- Simulate Data ----------------------------------------------------------
-N = 3
-T = 500
+N = 2
+T = 200
 t = 1:T
-Phi=diag(3)
-Sig=diag(3)
+Phi=diag(N)
+Sig=diag(N)
 
 s1 = gen_trendComp(T, Phi, Sig)
 s2 = gen_seasComp(T, Phi, Sig)
-s0 = rmvnorm(n = T, mean = rep(0,N), sigma = diag(3))
+s0 = rmvnorm(n = T, mean = rep(0,N), sigma = diag(N))
 
 data = s1+s2+s0
-plot(ts(data))
+#plot(ts(data))
 
+#spec.ar(data[,1])
+#abline(v=seq(1/12, 1/2, 1/12))
 
 # ---- Modeling ---------------------------------------------------------------
 transform = "none"
@@ -111,24 +113,24 @@ extract.seas.5   <- sigex.extract(data,signal.seas.5,mdl,param)
 extract.sa       <- sigex.extract(data,signal.sa,mdl,param)
 
 # ---- No band plots ----------------------------------------------------------
-trendcol <- "tomato"
-seascol <- "seagreen"
-sacol <- "navyblue"
-fade <- 60
 
 subseries <- 1
 
 xss = data[, subseries]
-s13 = extract.sa[[2]][, subseries]
-s2  = extract.seas[[2]][, subseries]
 s1  = extract.trendann[[2]][, subseries]
-s3 = xss - s1 - s2 + 0
-plot(range(t), range(xss,s1, s2, s3), type="n")
-lines(xss)
-lines(s1, col=trendcol)
-lines(s2, col=seascol)
-lines(s3, col=sacol)
-acf(s3)
+s2  = extract.seas[[2]][, subseries]
+s0 = xss - s1 - s2 + 0
+s10 = extract.sa[[2]][, subseries]
+
+#modify values for plotting
+ms2 = s2 + 30
+ms0 = s0 - 20
+
+plot(range(t), range(xss,s1, ms2, ms0), type="n")
+lines(as.numeric(xss))
+lines(s1, col="tomato")
+lines(ms2, col="seagreen")
+lines(ms0, col="navyblue")
 
 
 # ---- FRF --------------------------------------------------------------------
