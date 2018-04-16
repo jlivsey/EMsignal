@@ -4,12 +4,12 @@
 \alias{gen_trendComp}
 \title{Generate multivariate trend component}
 \usage{
-gen_trendComp(n, Ndim, Sig, burn = 1000)
+gen_trendComp(n, Phi, Sig, burn = 1000)
 }
 \arguments{
 \item{n}{length of series}
 
-\item{Ndim}{dimensionality of each observation}
+\item{Phi}{autoregressive parameter}
 
 \item{Sig}{covariance martrix white noise component}
 
