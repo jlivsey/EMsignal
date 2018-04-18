@@ -2,8 +2,8 @@ library(sigex)
 library(mvtnorm)
 
 # ---- Simulate Data ----------------------------------------------------------
-N = 1
-T = 500
+N = 2
+T <- TT <- 100
 t = 1:T
 Phi=diag(N)
 Sig=diag(N)
@@ -12,17 +12,15 @@ s1 = gen_trendComp(T, Phi, Sig)
 s2 = gen_seasComp(T, Phi, Sig)
 s0 = rmvnorm(n = T, mean = rep(0,N), sigma = diag(N))
 
-
-plot(ts(s2[,1]))
-spec.ar(s2[,1])
-abline(v=seq(1/12,1/2,1/12))
-
 data = s1+s2+s0
 data = demean(data)
 plot(ts(data))
 
 spec.ar(data[,1])
 abline(v=seq(1/12, 1/2, 1/12))
+
+x12 = diff(data[,1], 12)
+mean(x12)
 
 # ---- Modeling ---------------------------------------------------------------
 transform = "none"
@@ -31,14 +29,12 @@ N <- dim(x)[1]
 T <- dim(x)[2]
 
 # ---- Model ------------------------------------------------------------------
-
 # stochastic effects
-delta.trend <- c(1,-1)
 def <- c(0,1,0,1)
 
 mdl <- NULL
 # 1 trend-cycle (annual cycle)
-mdl <- sigex.add(mdl,seq(1,N),"wn",delta.trend,def)
+mdl <- sigex.add(mdl,seq(1,N),"wn",c(1,-1),def)
 # 2 first atomic monthly seas
 mdl <- sigex.add(mdl,seq(1,N),"wn",c(1,-2*cos(2*pi/12),1),def)
 # 3 second atomic monthly seas
@@ -56,9 +52,20 @@ mdl <- sigex.add(mdl,seq(1,N),"wn",1,def)
 # fixed effects [mean effect]
 mdl <- sigex.meaninit(mdl,data,0)
 
+# ---- Model 2 ----------------------------------------------------------------
+mdl = NULL
+mdl = sigex.add(mdl, seq(1,N), 'wn', c(1,-1), def)
+mdl = sigex.add(mdl, seq(1,N), 'wn', rep(1, 12), def)
+mdl <- sigex.add(mdl,seq(1,N),"wn",1,def)
+mdl <- sigex.meaninit(mdl,data,0)
+
+
+# Set default parameters
 par.default <- sigex.default(mdl,data)[[1]]
 flag.default <- sigex.default(mdl,data)[[2]]
 psi.default <- sigex.par2psi(par.default,flag.default,mdl)
+
+param = par.default
 
 # ---- MOM estimation and reduced specification -------------------------------
 mdl.mom <- mdl
@@ -95,7 +102,8 @@ mdl <- analysis.mom[[3]]
 psi <- analysis.mom[[4]]
 param <- sigex.psi2par(psi,mdl,data)
 
-# ---- METHOD 1: DIRECT MATRIX APPROACH ---------------------------------------
+
+# ---- DMA for model 1 --------------------------------------------------------
 signal.trendann <- sigex.signal(data,param,mdl,1)
 signal.seas.1   <- sigex.signal(data,param,mdl,2)
 signal.seas.2   <- sigex.signal(data,param,mdl,3)
@@ -105,6 +113,7 @@ signal.seas.5   <- sigex.signal(data,param,mdl,6)
 signal.seas.6   <- sigex.signal(data,param,mdl,7)
 signal.seas     <- sigex.signal(data,param,mdl,2:7)
 signal.sa       <- sigex.signal(data,param,mdl,c(1,8))
+signal.irr      <- sigex.signal(data,param,mdl,8)
 
 extract.trendann <- sigex.extract(data,signal.trendann,mdl,param)
 extract.seas     <- sigex.extract(data,signal.seas,mdl,param)
@@ -114,36 +123,47 @@ extract.seas.3   <- sigex.extract(data,signal.seas.3,mdl,param)
 extract.seas.4   <- sigex.extract(data,signal.seas.4,mdl,param)
 extract.seas.5   <- sigex.extract(data,signal.seas.5,mdl,param)
 extract.sa       <- sigex.extract(data,signal.sa,mdl,param)
+extract.irr      <- sigex.extract(data,signal.irr,mdl,param)
+
+# ---- DMA for model 2 --------------------------------------------------------
+signal.trendann <- sigex.signal(data,param,mdl,1)
+signal.seas     <- sigex.signal(data,param,mdl,2)
+signal.irr      <- sigex.signal(data,param,mdl,3)
+
+extract.trendann <- sigex.extract(data,signal.trendann,mdl,param)
+extract.seas     <- sigex.extract(data,signal.seas,mdl,param)
+extract.irr      <- sigex.extract(data,signal.irr,mdl,param)
+
 
 # ---- No band plots ----------------------------------------------------------
 
 subseries <- 1
 
 xss = data[, subseries]
-s1  = extract.trendann[[2]][, subseries]
-s2  = extract.seas[[2]][, subseries]
-s0 = xss - s1 - s2 + 0
-s10 = extract.sa[[2]][, subseries]
+s1  = extract.trendann[[1]][, subseries]
+s2  = extract.seas[[1]][, subseries]
+s0 = xss - s1 - s2 + 0 # why is this different than s0irr below
+s0irr = extract.irr[[1]][, subseries]
 
-#modify values for plotting
-ms2 = s2 + 0
-ms0 = s0 + 0
+{
+op = par(mfrow=c(3,1), mar=c(2,3,2,1))
+plot(as.numeric(xss), type="l")
+lines(s1, col="tomato")
+plot(s2, type="l", col="seagreen"); abline(h=0, lty="dotted")
+abline(v=seq(1,TT,12), lty="dashed")
+plot(s0irr, type="l", col="navyblue"); abline(h=0, lty="dotted")
+par(op)
+}
 
-plot(range(t), range(xss,s1, ms2, ms0), type="n")
-lines(as.numeric(xss))
-lines(as.numeric(s1), col="tomato")
-lines(ms2, col="seagreen")
-lines(ms0, col="navyblue")
-
-acf(s0)
+acf(s0irr)
 
 # ---- FRF --------------------------------------------------------------------
 
 sigex.frf(data = xss, param = param, mdl = mdl, sigcomps = 1, grid = 6000)
 
 # --- Filter weights ----------------------------------------------------------
-
-F = signal.trendann[[1]]
-fw = F[100, 1:200]
+FF = signal.trendann[[1]]
+FF = block2array(FF, N, T)
+fw = FF[1, 1, T/2, ]
 plot(fw, type="l")
 sum(fw)

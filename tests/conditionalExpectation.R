@@ -11,3 +11,19 @@ conditionalExpectiation <- function(){
   }
   return(out)
 }
+
+
+for(j in 1:J){
+
+  lsigma = list()
+
+  val = 0
+  for(k in 1:T){
+    new.val = lsignal[[j]][[2]][k, k] + lextract[[j]][[1]][k, ]
+    val = val + new.val
+  }
+  val = val / T
+
+}
+
+
