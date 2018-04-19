@@ -10,7 +10,7 @@
 
 EMiterate = function(Sig, lMS){
   J = length(Sig)
-  for(j in 1:J)  Sig[[j]] = EMcritical(j, lMS)
+  for(j in 1:J)  Sig[[j]] = EMcritical(j, Sig, lMS)
   param = sig2param(Sig)
   lMS = sigexRun(param)
   return(list(Sig, lMS))

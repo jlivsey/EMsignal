@@ -133,35 +133,28 @@ extract.seas     <- sigex.extract(data,signal.seas,mdl,param)
 extract.irr      <- sigex.extract(data,signal.irr,mdl,param)
 
 
-# ---- No band plots ----------------------------------------------------------
-
+# ---- Plots ------------------------------------------------------------------
 subseries <- 1
-
 xss = data[, subseries]
-s1  = extract.trendann[[1]][, subseries]
-s2  = extract.seas[[1]][, subseries]
-s0 = xss - s1 - s2 + 0 # why is this different than s0irr below
-s0irr = extract.irr[[1]][, subseries]
-
+s1.hat  = extract.trendann[[1]][, subseries]
+s2.hat  = extract.seas[[1]][, subseries]
+s0.hat = extract.irr[[1]][, subseries]
 {
-op = par(mfrow=c(3,1), mar=c(2,3,2,1))
-plot(as.numeric(xss), type="l")
-lines(s1, col="tomato")
-plot(s2, type="l", col="seagreen"); abline(h=0, lty="dotted")
-abline(v=seq(1,TT,12), lty="dashed")
-plot(s0irr, type="l", col="navyblue"); abline(h=0, lty="dotted")
-par(op)
+  op = par(mfrow=c(3,1), mar=c(2,3,2,1))
+  plot(as.numeric(xss), type="l")
+  lines(s1.hat, col="tomato")
+  plot(s2.hat, type="l", col="seagreen"); abline(h=0, lty="dotted")
+  abline(v=seq(1,TT,12), lty="dashed")
+  plot(s0.hat, type="l", col="navyblue"); abline(h=0, lty="dotted")
+  par(op)
 }
-
-acf(s0irr)
-
-# ---- FRF --------------------------------------------------------------------
-
-sigex.frf(data = xss, param = param, mdl = mdl, sigcomps = 1, grid = 6000)
 
 # --- Filter weights ----------------------------------------------------------
 FF = signal.trendann[[1]]
 FF = block2array(FF, N, T)
 fw = FF[1, 1, T/2, ]
 plot(fw, type="l")
+abline(v=seq(T/2, T, 12), lty="dotted")
+abline(v=seq(0, T/2, 12), lty="dotted")
 sum(fw)
+

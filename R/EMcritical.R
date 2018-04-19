@@ -8,9 +8,10 @@
 #' @export
 #'
 
-EMcritical = function(j, lMS){
+EMcritical = function(j, Sig, lMS){
   M = lMS[[1]]
   S = lMS[[2]]
+  invSig = lapply(Sig, solve)
   outSig = matrix(0, N, N)
   for(k in 1:TT){
     for(el in 1:TT){
