@@ -65,8 +65,6 @@ par.default <- sigex.default(mdl,data)[[1]]
 flag.default <- sigex.default(mdl,data)[[2]]
 psi.default <- sigex.par2psi(par.default,flag.default,mdl)
 
-param = par.default
-
 # ---- MOM estimation and reduced specification -------------------------------
 mdl.mom <- mdl
 par.mom <- sigex.momfit(data,par.default,mdl.mom)

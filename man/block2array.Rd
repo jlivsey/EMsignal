@@ -14,8 +14,7 @@ block2array(M, N, TT)
 \item{TT}{Number of sub-blocks in each row (column)}
 }
 \value{
-an array of dim [N,N,T,T] where [,,i,j] gives the (i,j)th NxN
-    sub-block
+an array of dim [N,N,T,T] where [,,i,j] gives the (i,j)th NxN sub-block
 }
 \description{
 Convert NTxNT matrix with NxN sub-blocks into [N,N,T,T] array

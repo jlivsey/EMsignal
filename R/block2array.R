@@ -6,8 +6,7 @@
 #' @param N dim of sub-blocks
 #' @param TT Number of sub-blocks in each row (column)
 #'
-#' @return an array of dim [N,N,T,T] where [,,i,j] gives the (i,j)th NxN
-#'     sub-block
+#' @return an array of dim [N,N,T,T] where [,,i,j] gives the (i,j)th NxN sub-block
 #' @export
 #'
 

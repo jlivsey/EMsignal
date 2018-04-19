@@ -3,7 +3,7 @@ library(mvtnorm)
 
 # ---- Simulate Data ----------------------------------------------------------
 N = 2
-T <- TT <- 300
+T <- TT <- 144
 t = 1:T
 Phi=diag(N)
 Sig=diag(N)
@@ -69,6 +69,8 @@ FF = signal.trendann[[1]]
 FF = block2array(FF, N, T)
 fw = FF[1, 1, T/2, ]
 plot(fw, type="l")
+abline(v=seq(T/2, T, 12), lty="dotted")
+abline(v=seq(0, T/2, 12), lty="dotted")
 sum(fw)
 
 
