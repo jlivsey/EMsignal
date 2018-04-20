@@ -3,7 +3,7 @@ library(mvtnorm)
 
 # ---- Simulate Data ----------------------------------------------------------
 N = 2
-T <- TT <- 144
+T <- TT <- 300
 t = 1:T
 Phi=diag(N)
 Sig=diag(N)
@@ -14,7 +14,13 @@ s0 = rmvnorm(n = T, mean = rep(0,N), sigma = diag(N))
 
 data = s1+s2+s0
 data = demean(data)
-#plot(ts(data))
+
+# ---- plotting and checks ----------------------------------------------------
+# plot(ts(data))
+# acf(data, lag.max = 100)
+# acf(diff(s1))
+# acf(diff(s2, 12))
+# acf(s0)
 
 # ---- Modeling ---------------------------------------------------------------
 transform = "none"

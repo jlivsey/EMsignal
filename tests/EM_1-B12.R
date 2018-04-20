@@ -3,7 +3,11 @@ source("sim1-B12.R")
 Gam1 = toeplitz(ARMAacvf(ma=rep(-1,11), lag.max = (TT-1)))
 Gam2 = toeplitz(ARMAacvf(ma=1, lag.max = (TT-1)))
 Gam3 = toeplitz(ARMAacvf(ma=c(rep(0,11), 1), lag.max = (TT-1)))
-invGam = list(solve(Gam1), solve(Gam2), solve(Gam3))
+Gam  = list(Gam1, Gam2, Gam3)
+invGam = lapply(Gam, solve)
+
+param = par.default
+param <- sigex.psi2par(psi,mdl,data)
 
 # ---- Initialize values for first iteration ----------------------------------
 
@@ -24,7 +28,10 @@ lMS = list(M, S)
 # -----------------------------------------------------------------------------
 
 out = EMiterate(Sig, lMS)
-Sig = out[[1]]
+(Sig = out[[1]])
 lMS = out[[2]]
 
+out = EMiterate(Sig, lMS)
+(Sig = out[[1]])
+lMS = out[[2]]
 
