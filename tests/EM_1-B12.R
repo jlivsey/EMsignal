@@ -1,8 +1,9 @@
 source("sim1-B12.R")
 
-Gam1 = toeplitz(ARMAacvf(ma=rep(-1,11), lag.max = (TT-1)))
-Gam2 = toeplitz(ARMAacvf(ma=1, lag.max = (TT-1)))
-Gam3 = toeplitz(ARMAacvf(ma=c(rep(0,11), 1), lag.max = (TT-1)))
+d = 12
+Gam1 = toeplitz(ARMAacvf(ma=rep(1,11), lag.max = (TT-1-d)))
+Gam2 = toeplitz(ARMAacvf(ma=-1, lag.max = (TT-1-d)))
+Gam3 = toeplitz(ARMAacvf(ma=c(rep(0,11), -1), lag.max = (TT-1-d)))
 Gam  = list(Gam1, Gam2, Gam3)
 invGam = lapply(Gam, solve)
 
@@ -19,19 +20,20 @@ M3 = block2array(signal.irr[[2]],      N = N, TT = TT)
 M = list(M1, M2, M3)
 
 S1 = extract.trendann[[1]]
+S1d = diff(S1, 12)
 S2 = extract.seas[[1]]
+S2d = diff(S2, 12)
 S3 = extract.irr[[1]]
-S = list(S1, S2, S3)
+S3d = diff(S3, 12)
+S = list(S1d, S2d, S3d)
 
 lMS = list(M, S)
 
 # -----------------------------------------------------------------------------
 
-out = EMiterate(Sig, lMS)
-(Sig = out[[1]])
-lMS = out[[2]]
+for(i in 1:10) {
+  out = EMiterate(Sig, lMS); (Sig = out[[1]]); lMS = out[[2]]
+  print(Sig)
+}
 
-out = EMiterate(Sig, lMS)
-(Sig = out[[1]])
-lMS = out[[2]]
 

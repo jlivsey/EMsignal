@@ -155,6 +155,5 @@ FF = block2array(FF, N, T)
 fw = FF[1, 1, T/2, ]
 plot(fw, type="l")
 abline(v=seq(T/2, T, 12), lty="dotted")
-abline(v=seq(0, T/2, 12), lty="dotted")
 sum(fw)
 

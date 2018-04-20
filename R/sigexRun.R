@@ -1,6 +1,6 @@
 #' Runs sigex for EM algorithm
 #'
-#' @param param parameter list is sigex form
+#' @param param parameter list in sigex form
 #'
 #' @return list with M (error matricies) and S (signal estimates)
 #' @export
@@ -23,9 +23,12 @@ sigexRun = function(param){
   M = list(M1, M2, M3)
 
   S1 = extract.trendann[[1]]
+  S1d = diff(S1, 12)
   S2 = extract.seas[[1]]
+  S2d = diff(S2, 12)
   S3 = extract.irr[[1]]
-  S = list(S1, S2, S3)
+  S3d = diff(S3, 12)
+  S = list(S1d, S2d, S3d)
 
   return(list(M, S))
 }

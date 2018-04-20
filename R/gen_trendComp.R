@@ -15,6 +15,7 @@
 gen_trendComp = function(n, Phi, Sig, burn=1000){
   N = n+burn
   Ndim = dim(Sig)[1]
+
   if(Ndim==1){ # handle univariate case first
     w = rnorm(n = N, mean = 0, sd = as.numeric(sqrt(Sig)))
     s = w[1]

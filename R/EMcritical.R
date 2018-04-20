@@ -11,14 +11,17 @@
 EMcritical = function(j, Sig, lMS){
   M = lMS[[1]]
   S = lMS[[2]]
+  d = 12
   invSig = lapply(Sig, solve)
   outSig = matrix(0, N, N)
-  for(k in 1:TT){
-    for(el in 1:TT){
-      D = invGam[[j]][k, el] * invSig[[1]]
-      new.term =  D %*% (M[[j]][,,k,el] + S[[j]][k, ] %*% t(S[[j]][el, ]))
+  for(k in (d+1):TT){
+    for(el in (d+1):TT){
+      D = invGam[[j]][k-d, el-d] # * invSig[[1]]
+      new.term =  D * (M[[j]][,,k,el] - M[[j]][,,k-12,el] - M[[j]][,,k,el-12] +
+                         M[[j]][,,k-12,el-12] + S[[j]][k-d, ] %*% t(S[[j]][el-d, ]))
       outSig = outSig + new.term
     }}
-  outSig = outSig / TT
+  outSig = outSig / (TT-d)
   return(outSig)
+  #return(( outSig + t(outSig) )/2)
 }
