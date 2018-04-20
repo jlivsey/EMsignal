@@ -8,7 +8,7 @@ Gam  = list(Gam1, Gam2, Gam3)
 invGam = lapply(Gam, solve)
 
 param = par.default
-param <- sigex.psi2par(psi,mdl,data)
+#param <- sigex.psi2par(psi,mdl,data)
 
 # ---- Initialize values for first iteration ----------------------------------
 
@@ -31,9 +31,15 @@ lMS = list(M, S)
 
 # -----------------------------------------------------------------------------
 
+Sig.mle = param2sig(param.mle)
+
+
 for(i in 1:10) {
   out = EMiterate(Sig, lMS); (Sig = out[[1]]); lMS = out[[2]]
-  print(Sig)
+  A = labsdiff(Sig, Sig.mle)
+  print(A)
+  print(sum(unlist(lapply(A, sum))))
+  print("------------------------------------")
 }
 
 

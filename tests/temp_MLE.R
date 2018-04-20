@@ -1,7 +1,3 @@
-##########################################################################
-################ MLE Routines (not recommended for these series) ##############
-#########################################################
-
 # MLE estimation of full model
 
 # setup, and fix parameters as desired
@@ -31,6 +27,6 @@ print(tstats)
 # bundle for default span
 analysis.mle <- sigex.bundle(data,transform,mdl.mle,psi.mle)
 
-psi <- analysis.mom[[4]]
-param <- sigex.psi2par(psi,mdl,data)
+psi <- analysis.mle[[4]]
+param.mle <- sigex.psi2par(psi,mdl,data)
 

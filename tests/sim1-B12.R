@@ -44,32 +44,32 @@ psi.default <- sigex.par2psi(par.default,flag.default,mdl)
 # Set param to TRUE values
 param = par.default
 
-# ---- MOM estimates for param ------------------------------------------------
-mdl.mom <- mdl
-par.mom <- sigex.momfit(data,par.default,mdl.mom)
-psi.mom <- sigex.par2psi(par.mom,flag.default,mdl.mom)
-#resid.mom <- sigex.resid(psi.mom,mdl.mom,data)
-
-thresh <- -1.66
-
-if(N > 1) {
-  reduced.mom <- sigex.reduce(data,par.mom,flag.default,mdl.mom,thresh,FALSE)
-  mdl.mom <- reduced.mom[[1]]
-  par.mom <- reduced.mom[[2]]
-  flag.mom <- sigex.default(mdl.mom,data)[[2]]
-  psi.mom <- sigex.par2psi(par.mom,flag.mom,mdl.mom)
-  #resid.mom <- sigex.resid(psi.mom,mdl.mom,data)
-}
-
-# bundle for default span
-analysis.mom <- sigex.bundle(data,transform,mdl.mom,psi.mom)
-
-## Rough: reduced MOM model
-#data <- analysis.mom[[1]]
-#mdl <- analysis.mom[[3]]
-psi <- analysis.mom[[4]]
-
-param <- sigex.psi2par(psi,mdl,data)
+# # ---- MOM estimates for param ------------------------------------------------
+# mdl.mom <- mdl
+# par.mom <- sigex.momfit(data,par.default,mdl.mom)
+# psi.mom <- sigex.par2psi(par.mom,flag.default,mdl.mom)
+# #resid.mom <- sigex.resid(psi.mom,mdl.mom,data)
+#
+# thresh <- -1.66
+#
+# if(N > 1) {
+#   reduced.mom <- sigex.reduce(data,par.mom,flag.default,mdl.mom,thresh,FALSE)
+#   mdl.mom <- reduced.mom[[1]]
+#   par.mom <- reduced.mom[[2]]
+#   flag.mom <- sigex.default(mdl.mom,data)[[2]]
+#   psi.mom <- sigex.par2psi(par.mom,flag.mom,mdl.mom)
+#   #resid.mom <- sigex.resid(psi.mom,mdl.mom,data)
+# }
+#
+# # bundle for default span
+# analysis.mom <- sigex.bundle(data,transform,mdl.mom,psi.mom)
+#
+# ## Rough: reduced MOM model
+# #data <- analysis.mom[[1]]
+# #mdl <- analysis.mom[[3]]
+# psi <- analysis.mom[[4]]
+#
+# param <- sigex.psi2par(psi,mdl,data)
 
 # ---- DMA for model ----------------------------------------------------------
 signal.trendann <- sigex.signal(data,param,mdl,1)
