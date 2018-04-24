@@ -3,7 +3,7 @@ library(mvtnorm)
 
 # ---- Simulate Data ----------------------------------------------------------
 N = 2
-T <- TT <- 100
+T <- TT <- 282
 t = 1:T
 Phi=diag(N)
 Sig=diag(N)
@@ -134,7 +134,7 @@ extract.irr      <- sigex.extract(data,signal.irr,mdl,param)
 
 
 # ---- Plots ------------------------------------------------------------------
-subseries <- 1
+subseries <- 2
 xss = data[, subseries]
 s1.hat  = extract.trendann[[1]][, subseries]
 s2.hat  = extract.seas[[1]][, subseries]
