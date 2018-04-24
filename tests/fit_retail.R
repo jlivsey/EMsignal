@@ -1,33 +1,15 @@
 library(sigex)
-library(mvtnorm)
 
-# ---- Simulate Data ----------------------------------------------------------
-N = 3
-T <- TT <- 500
-t = 1:T
-Phi=diag(N)
-Sig=diag(N); Sig[1,2] <- Sig[2,1] <- .75
-
-s1 = gen_trendComp(T, Phi, Sig)
-s2 = gen_seasComp(T, Phi, Sig)
-s0 = rmvnorm(n = T, mean = rep(0,N), sigma = diag(N))
-
-data = s1+s2+s0
+data = matrix(c(retail$`Clothing stores.dat`,
+                retail$`Jewelry stores.dat`),
+              ncol=2, nrow = 282, byrow = FALSE)
 data = demean(data)
 
-plot(ts(data), main="simulated series")
+N = 2
+T <- TT <- 282
+t = 1:T
 
-# ---- plotting and checks ----------------------------------------------------
-# plot(ts(data))
-# acf(data, lag.max = 100)
-# acf(diff(s1))
-# acf(diff(s2, 12))
-# acf(s0)
-par(mfrow=c(2,1))
-spec.ar(ts(data[,1]))
-spec.ar(ts(data[,2]))
 
-# ---- Modeling ---------------------------------------------------------------
 transform = "none"
 x <- t(data)
 N <- dim(x)[1]
@@ -85,4 +67,26 @@ extract.trendann <- sigex.extract(data,signal.trendann,mdl,param)
 extract.seas     <- sigex.extract(data,signal.seas,mdl,param)
 extract.irr      <- sigex.extract(data,signal.irr,mdl,param)
 
+# ---- Plots ------------------------------------------------------------------
+subseries <- 2
+xss = data[, subseries]
+s1.hat  = extract.trendann[[1]][, subseries]
+s2.hat  = extract.seas[[1]][, subseries]
+s0.hat = extract.irr[[1]][, subseries]
+{
+  op = par(mfrow=c(3,1), mar=c(2,3,2,1))
+  plot(as.numeric(xss), type="l")
+  lines(s1.hat, col="tomato")
+  plot(s2.hat, type="l", col="seagreen"); abline(h=0, lty="dotted")
+  abline(v=seq(1,TT,12), lty="dashed")
+  plot(s0.hat, type="l", col="navyblue"); abline(h=0, lty="dotted")
+  par(op)
+}
 
+# --- Filter weights ----------------------------------------------------------
+FF = signal.seas[[1]]
+FF = block2array(FF, N, T)
+fw = FF[1, 2, T/2, ]
+plot(fw, type="l")
+abline(v=seq(T/2, T, 12), lty="dotted")
+sum(fw)
