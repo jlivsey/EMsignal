@@ -5,6 +5,7 @@ data = matrix(c(retail$`Clothing stores.dat`,
               ncol=2, nrow = 282, byrow = FALSE)
 data = demean(data)
 
+
 N = 2
 T <- TT <- 282
 t = 1:T
@@ -27,9 +28,6 @@ mdl <- sigex.meaninit(mdl,data,0)
 par.default <- sigex.default(mdl,data)[[1]]
 flag.default <- sigex.default(mdl,data)[[2]]
 psi.default <- sigex.par2psi(par.default,flag.default,mdl)
-
-# Set param to TRUE values
-param = par.default
 
 # # ---- MOM estimates for param ------------------------------------------------
 mdl.mom <- mdl
@@ -56,7 +54,41 @@ analysis.mom <- sigex.bundle(data,transform,mdl.mom,psi.mom)
 #mdl <- analysis.mom[[3]]
 psi <- analysis.mom[[4]]
 
-param <- sigex.psi2par(psi,mdl,data)
+param.mom <- sigex.psi2par(psi,mdl,data)
+
+# ---- MLE --------------------------------------------------------------------
+# MLE estimation of full model
+
+# setup, and fix parameters as desired
+mdl.mle <- mdl
+psi.mle <- psi.default
+flag.mle <- Im(psi.mle)
+par.mle <- sigex.psi2par(psi.mle,mdl.mle,data)
+
+# run fitting
+fit.mle <- sigex.mlefit(data,par.mle,flag.mle,mdl.mle,"bfgs")
+
+psi.mle[flag.mle==1] <- fit.mle[[1]]$par
+psi.mle <- psi.mle + 1i*flag.mle
+hess <- fit.mle[[1]]$hessian
+par.mle <- fit.mle[[2]]
+resid.mle <- sigex.resid(psi.mle,mdl.mle,data)
+acf(t(resid.mle),lag.max=40)
+
+print(eigen(hess)$values)
+taus <- log(sigex.conditions(data,psi.mle,mdl.mle))
+print(taus)
+
+tstats <- sigex.tstats(mdl.mle,psi.mle,hess)
+stderrs <- sigex.psi2par(tstats,mdl,data)
+print(tstats)
+
+# bundle for default span
+analysis.mle <- sigex.bundle(data,transform,mdl.mle,psi.mle)
+
+psi <- analysis.mle[[4]]
+param.mle <- sigex.psi2par(psi,mdl,data)
+
 
 # ---- DMA for model ----------------------------------------------------------
 signal.trendann <- sigex.signal(data,param,mdl,1)
@@ -68,7 +100,7 @@ extract.seas     <- sigex.extract(data,signal.seas,mdl,param)
 extract.irr      <- sigex.extract(data,signal.irr,mdl,param)
 
 # ---- Plots ------------------------------------------------------------------
-subseries <- 2
+subseries <- 1
 xss = data[, subseries]
 s1.hat  = extract.trendann[[1]][, subseries]
 s2.hat  = extract.seas[[1]][, subseries]
@@ -84,7 +116,7 @@ s0.hat = extract.irr[[1]][, subseries]
 }
 
 # --- Filter weights ----------------------------------------------------------
-FF = signal.seas[[1]]
+FF = signal.trendann[[1]]
 FF = block2array(FF, N, T)
 fw = FF[1, 2, T/2, ]
 plot(fw, type="l")

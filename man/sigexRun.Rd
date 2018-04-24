@@ -7,7 +7,7 @@
 sigexRun(param)
 }
 \arguments{
-\item{param}{parameter list is sigex form}
+\item{param}{parameter list in sigex form}
 }
 \value{
 list with M (error matricies) and S (signal estimates)

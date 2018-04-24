@@ -9,7 +9,7 @@ Phi=diag(N)
 Sig=diag(N); Sig[1,2] <- Sig[2,1] <- .75
 
 s1 = gen_trendComp(T, Phi, Sig)
-s2 = gen_seasComp(T, Phi, Sig)
+s2 = gen_seasComp(T, Phi, diag(N))
 s0 = rmvnorm(n = T, mean = rep(0,N), sigma = diag(N))
 
 data = s1+s2+s0
@@ -23,9 +23,10 @@ plot(ts(data), main="simulated series")
 # acf(diff(s1))
 # acf(diff(s2, 12))
 # acf(s0)
-par(mfrow=c(2,1))
+par(mfrow=c(3,1))
 spec.ar(ts(data[,1]))
 spec.ar(ts(data[,2]))
+spec.ar(ts(data[,3]))
 
 # ---- Modeling ---------------------------------------------------------------
 transform = "none"

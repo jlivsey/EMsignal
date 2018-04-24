@@ -157,3 +157,12 @@ plot(fw, type="l")
 abline(v=seq(T/2, T, 12), lty="dotted")
 sum(fw)
 
+par(mfrow=c(3,2), mar=c(2,2,3,1))
+for(i in 1:N){
+  for(j in i:N){
+    cat(i,j)
+    fw = FF[i, j, T/2, ]
+    plot(fw, type="l", main=paste(i,j))
+    abline(v=seq(T/2, T, 12), lty="dotted")
+  }
+}

@@ -4,7 +4,7 @@
 \alias{EMcritical}
 \title{Calculate updated Sigma values at EM critical point}
 \usage{
-EMcritical(j, lMS)
+EMcritical(j, Sig, lMS)
 }
 \arguments{
 \item{j}{component of mdl}
