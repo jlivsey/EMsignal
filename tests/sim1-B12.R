@@ -2,8 +2,8 @@ library(sigex)
 library(mvtnorm)
 
 # ---- Simulate Data ----------------------------------------------------------
-N = 3
-T <- TT <- 500
+N = 2
+T <- TT <- 300
 t = 1:T
 Phi=diag(N)
 Sig=diag(N); Sig[1,2] <- Sig[2,1] <- .75
@@ -75,7 +75,7 @@ analysis.mom <- sigex.bundle(data,transform,mdl.mom,psi.mom)
 #mdl <- analysis.mom[[3]]
 psi <- analysis.mom[[4]]
 
-param <- sigex.psi2par(psi,mdl,data)
+param.mom <- sigex.psi2par(psi,mdl,data)
 
 # ---- DMA for model ----------------------------------------------------------
 signal.trendann <- sigex.signal(data,param,mdl,1)
@@ -87,3 +87,26 @@ extract.seas     <- sigex.extract(data,signal.seas,mdl,param)
 extract.irr      <- sigex.extract(data,signal.irr,mdl,param)
 
 
+# ---- Plots ------------------------------------------------------------------
+subseries <- 2
+xss = data[, subseries]
+s1.hat  = extract.trendann[[1]][, subseries]
+s2.hat  = extract.seas[[1]][, subseries]
+s0.hat = extract.irr[[1]][, subseries]
+{
+  op = par(mfrow=c(3,1), mar=c(2,3,2,1))
+  plot(as.numeric(xss), type="l")
+  lines(s1.hat, col="tomato")
+  plot(s2.hat, type="l", col="seagreen"); abline(h=0, lty="dotted")
+  abline(v=seq(1,TT,12), lty="dashed")
+  plot(s0.hat, type="l", col="navyblue"); abline(h=0, lty="dotted")
+  par(op)
+}
+
+# --- Filter weights ----------------------------------------------------------
+FF = signal.trendann[[1]]
+FF = block2array(FF, N, T)
+fw = FF[1, 1, T/2, ]
+plot(fw, type="l")
+abline(v=seq(T/2, T, 12), lty="dotted")
+sum(fw)

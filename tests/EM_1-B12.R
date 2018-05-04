@@ -7,7 +7,7 @@ Gam3 = toeplitz(ARMAacvf(ma=c(rep(0,11), -1), lag.max = (TT-1-d)))
 Gam  = list(Gam1, Gam2, Gam3)
 invGam = lapply(Gam, solve)
 
-param = par.default
+param = param.mom
 #param <- sigex.psi2par(psi,mdl,data)
 
 # ---- Initialize values for first iteration ----------------------------------
@@ -32,6 +32,7 @@ lMS = list(M, S)
 # -----------------------------------------------------------------------------
 
 Sig.mle = param2sig(param.mle)
+Sig.mle = param2sig(param)
 
 
 for(i in 1:10) {
