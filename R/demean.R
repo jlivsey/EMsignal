@@ -2,7 +2,7 @@
 
 #' Demean vector time series
 #'
-#' takes an sample size (T) x dim (N) matrix (or its transpose) and removes the
+#' takes a sample of size (T) x dim (N) matrix (or its transpose) and removes the
 #' sample means of each column (row).
 #'
 #' @param x matrix vector valued time series (assumes dim < sample size)
