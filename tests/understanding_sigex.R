@@ -2,8 +2,8 @@ library(sigex)
 library(mvtnorm)
 
 # ---- Simulate Data ----------------------------------------------------------
-N = 2
-T <- TT <- 282
+N = 3
+T <- TT <- 300
 t = 1:T
 Phi=diag(N)
 Sig=diag(N)
