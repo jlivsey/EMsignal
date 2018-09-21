@@ -13,6 +13,6 @@ demean(x)
 same dim matrix as supplied with sample mean removed
 }
 \description{
-takes an sample size (T) x dim (N) matrix (or its transpose) and removes the
+takes a sample of size (T) x dim (N) matrix (or its transpose) and removes the
 sample means of each column (row).
 }
