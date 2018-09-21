@@ -12,7 +12,7 @@ param = par.default
 
 # ---- Initialize values for first iteration ----------------------------------
 
-Sig = param2sig(param)
+Sig = param2sig(param.mle)
 
 M1 = block2array(signal.trendann[[2]], N = N, TT = TT)
 M2 = block2array(signal.seas[[2]],     N = N, TT = TT)
