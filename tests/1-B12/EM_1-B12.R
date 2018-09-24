@@ -42,5 +42,3 @@ for(i in 1:10) {
   print(sum(unlist(lapply(A, sum))))
   print("------------------------------------")
 }
-
-
