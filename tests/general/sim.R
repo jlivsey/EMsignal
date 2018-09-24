@@ -91,9 +91,9 @@ extract.irr      <- sigex.extract(data,signal.irr,mdl,param)
 # ---- Plots ------------------------------------------------------------------
 subseries <- 2
 xss = data[, subseries]
-s1.hat  = extract.trendann[[1]][, subseries]
-s2.hat  = extract.seas[[1]][, subseries]
-s0.hat = extract.irr[[1]][, subseries]
+s1.hat  = extract[[1]][[1]][, subseries]
+s2.hat  = extract[[2]][[1]][, subseries]
+s0.hat = extract[[3]][[1]][, subseries]
 {
   op = par(mfrow=c(3,1), mar=c(2,3,2,1))
   plot(as.numeric(xss), type="l")
