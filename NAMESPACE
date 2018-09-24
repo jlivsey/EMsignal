@@ -2,6 +2,7 @@
 
 export(EMcritical)
 export(EMiterate)
+export(EMsigex)
 export(block2array)
 export(demean)
 export(gen_seasComp)

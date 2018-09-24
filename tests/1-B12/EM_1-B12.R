@@ -1,4 +1,4 @@
-source("sim1-B12.R")
+# source("sim1-B12.R")
 
 d = 12
 Gam1 = toeplitz(ARMAacvf(ma=rep(1,11), lag.max = (TT-1-d)))

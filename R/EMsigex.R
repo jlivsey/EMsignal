@@ -1,13 +1,17 @@
 #' Perform multivariate signal extraction with *sigex* via the EM algoritm
 #'
-#' @return
+#' @param data multivariate time series as a matrix (sampleSize x dim)
+#' @param mdl sigex model object
+#' @param transform transform for data. Default "none"
+#'
+#' @return list of parameter estimates
 #' @export
 #'
 
 EMsigex <- function(data, mdl, transform="none"){
 
   J = length(mdl[[2]]) # total number of components in model
-  d = lapply(mdl[[3]], length) # diff order of each component
+  d = unlist(lapply(mdl[[3]], length)) # diff order of each component
 
   # put together overdifferencing operator coef vectors
   diff.over = list()
