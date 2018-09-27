@@ -26,8 +26,16 @@ sigexRun = function(param, data, mdl){
     extract[[j]] = sigex.extract(data, signal[[j]], mdl, param)
   }
 
-  # put together overdifferencing operator coef vectors
+  # put together differencing operators
   diff.full = sigex.delta(mdl = mdl, omits = NA) # full difference operator
+  diff.full = round(diff.full) # this is not needed in updated sigex package
+  d.full = length(diff.full)
+  # Build differencing matrix
+  delta0pad = c(diff.full, rep(0, TT-d.full+1))
+  D = suppressWarnings(matrix(delta0pad, nrow = TT-d.full,
+                              ncol = TT, byrow = TRUE))
+
+  # put together overdifferencing operator coef vectors
   diff.over = list() # over differenced component operators
   for(j in 1:J) diff.over[[j]] = sigex.delta(mdl = mdl, omits = j)
 
@@ -35,16 +43,20 @@ sigexRun = function(param, data, mdl){
   M = list()
   M.diff = list()
   for(j in 1:J){
+
+    print(j)
+
     M[[j]] = block2array(signal[[j]][[2]], N = N, TT = TT)
     # need to define d the full differencing order
-    d.full = length(diff.full)
-    M.diff[[j]] = array(NA, c(N,N,TT-d.full, TT-d.full))
-    for(k in 1:(TT-d.full)){
-    for(el in 1:(TT-d.full)){
+    M.diff[[j]] = array(NA, c(N, TT-d.full, N, TT-d.full))
+    for(k in (d.full+1):(TT)){
+    for(el in (d.full+1):(TT)){
       for(s in 1:d.full){
       for(t in 1:d.full){
-          M.diff[[j]][,,k, el] = diff.full[s] * diff.full[t] *
-                                 M[[j]][,,k-s,el-t]
+        #print(c(k, el, s, t))
+
+        M.diff[[j]][,,k-d.full, el-d.full] = diff.full[s] * diff.full[t] *
+                                              M[[j]][,,k-s,el-t]
       }}
     }}
   }
@@ -53,9 +65,7 @@ sigexRun = function(param, data, mdl){
   S = list()
   for(j in 1:J){
     S[[j]] = extract[[j]][[1]]
-    S[[j]] = filter(x = S[[j]], filter = diff.over[[j]], sides = 1)
-    S[[j]] = na.omit(S[[j]])
-    S[[j]] = as.matrix(S[[j]])
+    S[[j]] = D %*% S[[j]]
   }
 
   return(list(M, S))
