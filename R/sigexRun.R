@@ -33,10 +33,22 @@ sigexRun = function(param, data, mdl){
 
   # form output into paper notation
   M = list()
+  M.diff = list()
   for(j in 1:J){
     M[[j]] = block2array(signal[[j]][[2]], N = N, TT = TT)
-  # differenced M double sum goes here !!!
+    # need to define d the full differencing order
+    d.full = length(diff.full)
+    M.diff[[j]] = array(NA, c(N,N,TT-d.full, TT-d.full))
+    for(k in 1:(TT-d.full)){
+    for(el in 1:(TT-d.full)){
+      for(s in 1:d.full){
+      for(t in 1:d.full){
+          M.diff[[j]][,,k, el] = diff.full[s] * diff.full[t] *
+                                 M[[j]][,,k-s,el-t]
+      }}
+    }}
   }
+
 
   S = list()
   for(j in 1:J){
