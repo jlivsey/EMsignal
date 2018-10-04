@@ -1,6 +1,6 @@
 
-N = 2
-TT = 3
+N = 3
+TT = 300
 
 Idx = matrix(1:(N*TT), ncol=N, byrow = TRUE)
 Idx

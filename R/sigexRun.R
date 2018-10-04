@@ -46,19 +46,12 @@ sigexRun = function(param, data, mdl){
 
     print(j)
 
-    M[[j]] = block2array(signal[[j]][[2]], N = N, TT = TT)
-    # need to define d the full differencing order
-    M.diff[[j]] = array(NA, c(N, TT-d.full, N, TT-d.full))
-    for(k in (d.full+1):(TT)){
-    for(el in (d.full+1):(TT)){
-      for(s in 1:d.full){
-      for(t in 1:d.full){
-        #print(c(k, el, s, t))
+    # M[[j]] = block2array(signal[[j]][[2]], N = N, TT = TT)
+    # # need to define d the full differencing order
+    # M.diff[[j]] = array(NA, c(N, TT-d.full, N, TT-d.full))
 
-        M.diff[[j]][,,k-d.full, el-d.full] = diff.full[s] * diff.full[t] *
-                                              M[[j]][,,k-s,el-t]
-      }}
-    }}
+    M.diff[[j]] = matrixDiff(m = M[[j]], N = N, TT = TT, delta = diff.full)
+
   }
 
 
