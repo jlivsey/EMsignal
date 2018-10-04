@@ -12,8 +12,3 @@ export(param2sig)
 export(sig2param)
 export(sigexRun)
 export(tr)
-
-# Import all packages listed as Imports or Depends
-import(
-	Rcpp, RcppArmadillo
-)

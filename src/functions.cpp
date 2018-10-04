@@ -3,7 +3,7 @@
 
 
 // [[Rcpp::export]]
-arma::mat subBlock(const arma::mat& m, int N, int el, int k){
+arma::mat subBlock(const arma::mat& m, const int& N, const int& el, const int& k){
   // This function assumes R indexing is being passed
   return m.submat(N*(el-1), N*(k-1), N*el-1, N*k-1);
 }

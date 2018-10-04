@@ -26,21 +26,14 @@ sigexRun = function(param, data, mdl){
     extract[[j]] = sigex.extract(data, signal[[j]], mdl, param)
   }
 
-  # put together differencing operators
+  # put together full differencing operator
   diff.full = sigex.delta(mdl = mdl, omits = NA) # full difference operator
   diff.full = round(diff.full) # this is not needed in updated sigex package
   d.full = length(diff.full)
-  # Build differencing matrix
-  delta0pad = c(diff.full, rep(0, TT-d.full+1))
-  D = suppressWarnings(matrix(delta0pad, nrow = TT-d.full,
-                              ncol = TT, byrow = TRUE))
 
-  # put together overdifferencing operator coef vectors
-  diff.over = list() # over differenced component operators
-  for(j in 1:J) diff.over[[j]] = sigex.delta(mdl = mdl, omits = j)
 
   # form output into paper notation
-  M = list()
+  # M = list()
   M.diff = list()
   for(j in 1:J){
 
@@ -50,7 +43,7 @@ sigexRun = function(param, data, mdl){
     # # need to define d the full differencing order
     # M.diff[[j]] = array(NA, c(N, TT-d.full, N, TT-d.full))
 
-    M.diff[[j]] = matrixDiff(m = M[[j]], N = N, TT = TT, delta = diff.full)
+    M.diff[[j]] = matrixDiff(m = signal[[j]][[2]], N = N, TT = TT, delta = diff.full)
 
   }
 

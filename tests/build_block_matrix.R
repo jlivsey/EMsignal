@@ -3,7 +3,7 @@ N = 3
 TT = 300
 
 Idx = matrix(1:(N*TT), ncol=N, byrow = TRUE)
-Idx
+# Idx
 
 A = matrix(NA, N*TT, N*TT)
 counter = 0
