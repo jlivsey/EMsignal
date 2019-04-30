@@ -24,7 +24,7 @@ plot(ts(data), main="simulated series")
 # acf(diff(s1))
 # acf(diff(s2, 12))
 # acf(s0)
-par(mfrow=c(3,1))
+par(mfrow=c(dim(data)[2],1))
 spec.ar(ts(data[,1]))
 spec.ar(ts(data[,2]))
 spec.ar(ts(data[,3]))
@@ -107,7 +107,7 @@ s0.hat = extract.irr[[1]][, subseries]
 # --- Filter weights ----------------------------------------------------------
 FF = signal.trendann[[1]]
 FF = block2array(FF, N, T)
-fw = FF[1, 1, T/2, ]
+fw = FF[1, T/2, 1, ]
 plot(fw, type="l")
 abline(v=seq(T/2, T, 12), lty="dotted")
 sum(fw)

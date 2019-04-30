@@ -11,13 +11,18 @@
 EMcritical = function(j, Sig, lMS, mdl){
   M = lMS[[1]]
   S = lMS[[2]]
-  d = length(mdl[[3]][[j]])
+  #d = length(mdl[[3]][[j]])
+  d <- 12
 
   # put together overdifferencing operator coef vectors
   diff.over = sigex.delta(mdl = mdl, omits = j)
 
-  Mj = M[[j]][,,k,el] - M[[j]][,,k-12,el] -
-       M[[j]][,,k,el-12] + M[[j]][,,k-12,el-12]
+  for(k in (d+1):TT){
+    for(el in (d+1):TT){
+      Mj = M[[j]][,k,,el] - M[[j]][,k-d,,el] -
+           M[[j]][,k,,el-d] + M[[j]][,k-d,,el-d]
+    }
+  }
 
   outSig = matrix(0, N, N)
   for(k in (d+1):TT){

@@ -1,9 +1,9 @@
 # source("sim1-B12.R")
 
 d = 12
-Gam1 = toeplitz(ARMAacvf(ma=rep(1,11), lag.max = (TT-1-d)))
-Gam2 = toeplitz(ARMAacvf(ma=-1, lag.max = (TT-1-d)))
-Gam3 = toeplitz(ARMAacvf(ma=c(rep(0,11), -1), lag.max = (TT-1-d)))
+Gam1 = toeplitz(ARMA2acf(ma=rep(1,11), lag.max = (TT-1-d)))
+Gam2 = toeplitz(ARMA2acf(ma=-1, lag.max = (TT-1-d)))
+Gam3 = toeplitz(ARMA2acf(ma=c(rep(0,11), -1), lag.max = (TT-1-d)))
 Gam  = list(Gam1, Gam2, Gam3)
 invGam = lapply(Gam, solve)
 
@@ -32,10 +32,14 @@ lMS = list(M, S)
 # -----------------------------------------------------------------------------
 
 Sig.mle = param2sig(param.mle)
+Sig.mle = param2sig(param.mom)
 Sig.mle = param2sig(param)
 
 
 for(i in 1:10) {
+
+  i <- 1
+
   out = EMiterate(Sig, lMS); (Sig = out[[1]]); lMS = out[[2]]
   A = labsdiff(Sig, Sig.mle)
   print(A)

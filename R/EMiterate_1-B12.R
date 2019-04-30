@@ -8,7 +8,7 @@
 #' @export
 #'
 
-EMiterate = function(Sig, lMS){
+EMiterate_1_B12 = function(Sig, lMS){
   J = length(Sig)
   for(j in 1:J)  Sig[[j]] = EMcritical(j, Sig, lMS)
   param = sig2param(Sig)

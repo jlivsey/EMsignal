@@ -8,7 +8,7 @@
 #' @export
 #'
 
-EMcritical = function(j, Sig, lMS){
+EMcritical_1_B12 = function(j, Sig, lMS){
   M = lMS[[1]]
   S = lMS[[2]]
   d = 12
