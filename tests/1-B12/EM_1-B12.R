@@ -10,11 +10,18 @@ invGam = lapply(Gam, solve)
 param = param.mom
 #param <- sigex.psi2par(psi,mdl,data)
 
+# ---- Likelihood at the TRUE values ------------------------------------------
+
+Sig1 <- diag(N)
+Sig1[1,2] <- Sig1[2,1] <- .75
+Sig.true <- list(Sig1, diag(N), diag(N))
+(lik.true <- sig2lik(Sig.true))
+
+
 # ---- Initialize values for first iteration ----------------------------------
 
-Sig = param2sig(param)
-
-sig2lik(Sig)
+Sig.mom = param2sig(param)
+(lik.mom <- sig2lik(Sig.mom))
 
 M1 = block2array(signal.trendann[[2]], N = N, TT = TT)
 M2 = block2array(signal.seas[[2]],     N = N, TT = TT)
@@ -35,11 +42,49 @@ lMS = list(M, S)
 
 # Sig.mle = param2sig(param.mle)
 
-for(i in 1:10) {
+iters <- 5
+Nc <- length(unlist(Sig.mom))
+Sig.save <- matrix(NA, nrow = iters+2, ncol= Nc+1)
+Sig.save[1, ] <- c(unlist(Sig.true), lik.true)
+Sig.save[2, ] <- c(unlist(Sig.mom), lik.mom)
+for(i in 1:iters) {
+  if(i==1) Sig <- Sig.mom
   out = EMiterate_1_B12(Sig, lMS, data, mdl)
   Sig = out[[1]]
   lMS = out[[2]]
   lik <- sig2lik(Sig)
+  Sig.save[i+2, ] <- c(unlist(Sig), lik)
+
+  print(i)
   print(lik)
   print("------------------------------------")
 }
+
+
+
+# ---- Plot parameter estimates over time -------------------------------------
+library(ggplot2)
+library(dplyr)
+
+dat <- data.frame(Sig.save)
+colnames(dat) <- c('t11','t21','t12','t22',
+                   's11','s21','s12','s22',
+                   'i11','i21','i12','i22','lik')
+dat$iter <- 1:dim(dat)[1]
+
+# Plot Likelihood
+dat.gath <- dat %>%
+  select(lik, iter) %>%
+  tidyr::gather('variable', 'value', -iter)
+
+ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
+  geom_line() +
+  geom_hline(yintercept = lik.true)
+
+# Plot all parameters
+dat.gath <- dat %>%
+  select(-lik) %>%
+  tidyr::gather('variable', 'value', -iter)
+
+ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
+  geom_line()

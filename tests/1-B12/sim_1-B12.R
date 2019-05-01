@@ -3,7 +3,7 @@ library(mvtnorm)
 library(EMsigex)
 
 # ---- Simulate Data ----------------------------------------------------------
-N = 2
+N = 3
 T <- TT <- 300
 t = 1:T
 Phi=diag(N)
@@ -36,12 +36,14 @@ N <- dim(x)[1]
 T <- dim(x)[2]
 
 # ---- Model ------------------------------------------------------------------
-def <- c(0,1,0,1)
-mdl = NULL
-mdl = sigex.add(mdl, seq(1,N), 'wn', c(1,-1), def)    # Trend
-mdl = sigex.add(mdl, seq(1,N), 'wn', rep(1, 12), def) # Seasonal
-mdl <- sigex.add(mdl,seq(1,N),"wn",1,def)             # Irregular
+mdl <- NULL
+mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"trend",c(1,-1))
+mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"seasonal", rep(1,12))
+mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"irregular",1)
+# regressors:
 mdl <- sigex.meaninit(mdl,data,0)
+
+
 
 # Set default parameters
 par.default <- sigex.default(mdl,data)[[1]]

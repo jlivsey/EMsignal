@@ -6,12 +6,11 @@
 #' @export
 #'
 
-sig2lik <- function(Sig){
+sig2lik <- function(Sig, mdl. = mdl, flag = flag.mom, data. = data){
   # Put in param form
   param <- sig2param(Sig)
   # Put in psi form
-  psi <- sigex.par2psi(param, flag.mom, mdl)
-
+  psi <- sigex.par2psi(param, flag, mdl)
   # likelihood
   lik = sigex.lik(psi, mdl, data)
 
