@@ -31,17 +31,16 @@ lMS = list(M, S)
 
 # -----------------------------------------------------------------------------
 
-Sig.mle = param2sig(param.mle)
-Sig.mle = param2sig(param.mom)
-Sig.mle = param2sig(param)
-
+# Sig.mle = param2sig(param.mle)
 
 for(i in 1:10) {
 
   i <- 1
 
-  out = EMiterate(Sig, lMS); (Sig = out[[1]]); lMS = out[[2]]
-  A = labsdiff(Sig, Sig.mle)
+  out = EMiterate_1_B12(Sig, lMS, data, mdl)
+  (Sig = out[[1]])
+  lMS = out[[2]]
+  A = labsdiff(Sig, Sig.save)
   print(A)
   print(sum(unlist(lapply(A, sum))))
   print("------------------------------------")

@@ -6,7 +6,7 @@
 #' @export
 #'
 
-sigexRun_1_B12 = function(param){
+sigexRun_1_B12 = function(param, data, mdl){
   # Run sigex with updated param
   signal.trendann <- sigex.signal(data,param,mdl,1)
   signal.seas     <- sigex.signal(data,param,mdl,2)
