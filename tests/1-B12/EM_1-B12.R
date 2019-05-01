@@ -14,6 +14,8 @@ param = param.mom
 
 Sig = param2sig(param)
 
+sig2lik(Sig)
+
 M1 = block2array(signal.trendann[[2]], N = N, TT = TT)
 M2 = block2array(signal.seas[[2]],     N = N, TT = TT)
 M3 = block2array(signal.irr[[2]],      N = N, TT = TT)
@@ -34,14 +36,10 @@ lMS = list(M, S)
 # Sig.mle = param2sig(param.mle)
 
 for(i in 1:10) {
-
-  i <- 1
-
   out = EMiterate_1_B12(Sig, lMS, data, mdl)
-  (Sig = out[[1]])
+  Sig = out[[1]]
   lMS = out[[2]]
-  A = labsdiff(Sig, Sig.save)
-  print(A)
-  print(sum(unlist(lapply(A, sum))))
+  lik <- sig2lik(Sig)
+  print(lik)
   print("------------------------------------")
 }
