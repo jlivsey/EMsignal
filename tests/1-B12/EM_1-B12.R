@@ -7,9 +7,6 @@ Gam3 = toeplitz(ARMA2acf(ma=c(rep(0,11), -1), lag.max = (TT-1-d)))
 Gam  = list(Gam1, Gam2, Gam3)
 invGam = lapply(Gam, solve)
 
-param = param.mom
-#param <- sigex.psi2par(psi,mdl,data)
-
 # ---- Likelihood at the TRUE values ------------------------------------------
 
 Sig1 <- diag(N)
@@ -20,6 +17,7 @@ Sig.true <- list(Sig1, diag(N), diag(N))
 
 # ---- Initialize values for first iteration ----------------------------------
 
+param = param.mom
 Sig.mom = param2sig(param)
 (lik.mom <- sig2lik(Sig.mom))
 

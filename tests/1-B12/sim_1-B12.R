@@ -113,3 +113,4 @@ fw = FF[1, T/2, 1, ]
 plot(fw, type="l")
 abline(v=seq(T/2, T, 12), lty="dotted")
 sum(fw)
+
