@@ -35,7 +35,7 @@ lMS = list(M, S)
 
 # -----------------------------------------------------------------------------
 
-iters <- 5
+iters <- 10
 Nc <- length(unlist(Sig)) # number columns of save matrix
 Sig.save <- matrix(NA, nrow = iters+1, ncol= Nc+1) # storage container
 Sig.save[1, ] <- c(unlist(Sig), sig2lik(Sig)) # first row initial conditions
@@ -47,6 +47,7 @@ for(i in 1:iters) {
   print(i)
   print(lik)
   print("------------------------------------")
+  Sig.save[i+1, ] <- c(unlist(Sig), lik)
 }
 
 

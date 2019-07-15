@@ -21,6 +21,9 @@ end.date <- end(dataALL.ts)
 range <- NULL
 data <- sigex.prep(dataALL.ts,transform,aggregate,subseries,range,TRUE)
 
+N <- dim(starts)[2]
+T <- dim(starts)[1]
+TT <- T
 
 # ---- Model ------------------------------------------------------------------
 mdl <- NULL
