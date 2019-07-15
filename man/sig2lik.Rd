@@ -4,7 +4,7 @@
 \alias{sig2lik}
 \title{output likelihood value for given Sigma values}
 \usage{
-sig2lik(Sig)
+sig2lik(Sig, mdl. = mdl, flag = flag.mom, data. = data)
 }
 \arguments{
 \item{Sig}{List of Sigma's to output likelihood of}
