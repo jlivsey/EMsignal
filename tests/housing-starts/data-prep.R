@@ -2,24 +2,34 @@ library(sigex)
 # library(mvtnorm)
 library(EMsigex)
 
-# ---- Simulate Data ----------------------------------------------------------
-N = dim(starts)[2]
-T <- TT <- 300
-t = 1:T
+# ---- Prep ---------------------------------------------------------------
+start.date = c(1964,1)
+period <- 12
 
-# ---- Modeling ---------------------------------------------------------------
-transform = "none"
-x <- t(data)
-N <- dim(x)[1]
-T <- dim(x)[2]
+## create ts object and plot
+dataALL.ts <- sigex.load(starts,start.date,period,c("South","West","NE","MW"),TRUE)
+
+#############################
+## select span and transforms
+
+## all data for NE-MW with log transform
+transform <- "log"
+aggregate <- FALSE
+subseries <- c(1,2,3,4)
+begin.date <- start(dataALL.ts)
+end.date <- end(dataALL.ts)
+range <- NULL
+data <- sigex.prep(dataALL.ts,transform,aggregate,subseries,range,TRUE)
+
 
 # ---- Model ------------------------------------------------------------------
 mdl <- NULL
-mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"trend",c(1,-1))
+# mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"trend",c(1,-1))   # first diff
+mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"trend",c(1,-2,1)) # second diff
 mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"seasonal", rep(1,12))
 mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"irregular",1)
 # regressors:
-mdl <- sigex.meaninit(mdl,data,0)
+mdl <- sigex.meaninit(mdl, data, 0)
 
 
 
