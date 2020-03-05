@@ -4,7 +4,7 @@
 \alias{sig2param}
 \title{Convert list of Sigma matricies to sigex param list}
 \usage{
-sig2param(Sig)
+sig2param(Sig, mdl, data)
 }
 \arguments{
 \item{Sig}{list with each element of list being an NxN sigma matrix}
