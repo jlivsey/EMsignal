@@ -34,12 +34,10 @@ mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"irregular",1)
 # regressors:
 mdl <- sigex.meaninit(mdl, data, 0)
 
-
-
 # Set default parameters
-par.default <- sigex.default(mdl,data)[[1]]
-flag.default <- sigex.default(mdl,data)[[2]]
-psi.default <- sigex.par2psi(par.default,flag.default,mdl)
+constraint <- NULL
+par.default <- sigex.default(mdl, data.ts, constraint)
+psi.default <- sigex.par2psi(par.default, mdl)
 
 # Set param to TRUE values
 param = par.default
