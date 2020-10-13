@@ -1,9 +1,9 @@
 # source("sim1-B12.R")
 
 d = 12
-Gam1 = toeplitz(ARMA2acf(ma=rep(1,11), lag.max = (TT-1-d)))
-Gam2 = toeplitz(ARMA2acf(ma=-1, lag.max = (TT-1-d)))
-Gam3 = toeplitz(ARMA2acf(ma=c(rep(0,11), -1), lag.max = (TT-1-d)))
+Gam1 = toeplitz(ARMAauto(ma = rep(1,11), ar = NULL, lag.max = (TT-1-d)))
+Gam2 = toeplitz(ARMAauto(ma = -1, ar = NULL, lag.max = (TT-1-d)))
+Gam3 = toeplitz(ARMAauto(ma = c(rep(0,11), -1), ar = NULL, lag.max = (TT-1-d)))
 Gam  = list(Gam1, Gam2, Gam3)
 invGam = lapply(Gam, solve)
 
@@ -12,14 +12,14 @@ invGam = lapply(Gam, solve)
 Sig1 <- diag(N)
 Sig1[1,2] <- Sig1[2,1] <- .75
 Sig.true <- list(Sig1, diag(N), diag(N))
-(lik.true <- sig2lik(Sig.true))
+(lik.true <- sig2lik(Sig.true, mdl, data))
 
 
 # ---- Initialize values for first iteration ----------------------------------
 
 param = param.mom
 Sig.mom = param2sig(param)
-(lik.mom <- sig2lik(Sig.mom))
+(lik.mom <- sig2lik(Sig.mom, mdl, data))
 
 M1 = block2array(signal.trendann[[2]], N = N, TT = TT)
 M2 = block2array(signal.seas[[2]],     N = N, TT = TT)
@@ -40,7 +40,7 @@ lMS = list(M, S)
 
 # Sig.mle = param2sig(param.mle)
 
-iters <- 5
+iters <- 50
 Nc <- length(unlist(Sig.mom))
 Sig.save <- matrix(NA, nrow = iters+2, ncol= Nc+1)
 Sig.save[1, ] <- c(unlist(Sig.true), lik.true)
@@ -50,7 +50,7 @@ for(i in 1:iters) {
   out = EMiterate_1_B12(Sig, lMS, data, mdl)
   Sig = out[[1]]
   lMS = out[[2]]
-  lik <- sig2lik(Sig)
+  lik <- sig2lik(Sig, mdl, data)
   Sig.save[i+2, ] <- c(unlist(Sig), lik)
 
   print(i)
@@ -60,29 +60,54 @@ for(i in 1:iters) {
 
 
 
-# ---- Plot parameter estimates over time -------------------------------------
-library(ggplot2)
-library(dplyr)
+# # ---- Plot parameter estimates over time -------------------------------------
+# library(ggplot2)
+# library(dplyr)
+#
+#
+#
+# dat <- data.frame(Sig.save)
+# colnames(dat) <- c('t11','t21','t12','t22',
+#                    's11','s21','s12','s22',
+#                    'i11','i21','i12','i22','lik')
+# dat$iter <- 1:dim(dat)[1]
+#
+# # Plot Likelihood
+# dat.gath <- dat %>%
+#   select(lik, iter) %>%
+#   tidyr::gather('variable', 'value', -iter)
+#
+# ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
+#   geom_line() +
+#   geom_hline(yintercept = lik.true)
+#
+# # Plot all parameters
+# dat.gath <- dat %>%
+#   select(-lik) %>%
+#   tidyr::gather('variable', 'value', -iter)
+#
+# ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
+#   geom_line()
 
-dat <- data.frame(Sig.save)
-colnames(dat) <- c('t11','t21','t12','t22',
-                   's11','s21','s12','s22',
-                   'i11','i21','i12','i22','lik')
-dat$iter <- 1:dim(dat)[1]
 
-# Plot Likelihood
-dat.gath <- dat %>%
-  select(lik, iter) %>%
-  tidyr::gather('variable', 'value', -iter)
 
-ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
-  geom_line() +
-  geom_hline(yintercept = lik.true)
 
-# Plot all parameters
-dat.gath <- dat %>%
-  select(-lik) %>%
-  tidyr::gather('variable', 'value', -iter)
+pdf("EM-sim-results-2020-03-19.pdf")
+for(i in 1:28){
+  plot(ss[, i], type = 'b')
+  abline(h = ss[1, i])
+}
+dev.off()
 
-ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
-  geom_line()
+
+
+
+
+
+
+
+
+
+
+
+

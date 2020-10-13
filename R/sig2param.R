@@ -10,7 +10,7 @@ sig2param = function(Sig, mdl, data){
   J <- length(Sig)
   N <- dim(Sig[[1]])[1]
   #FIX NEXT LINE - crude initialization, don't need to mdl and data in this function
-  param <- sigex.default(mdl,data)[[1]]
+  param <- sigex.default(mdl, data, NULL)
   for(j in 1:J){
     GCD = getGCD(Sig[[j]], N)
     param[[1]][[j]] = GCD[[1]]
