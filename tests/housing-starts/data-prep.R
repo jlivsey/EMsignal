@@ -36,7 +36,7 @@ mdl <- sigex.meaninit(mdl, data, 0)
 
 # Set default parameters
 constraint <- NULL
-par.default <- sigex.default(mdl, data.ts, constraint)
+par.default <- sigex.default(mdl, data, constraint)
 psi.default <- sigex.par2psi(par.default, mdl)
 
 # Set param to TRUE values
@@ -44,23 +44,22 @@ param = par.default
 
 # # ---- MOM estimates for param ------------------------------------------------
 mdl.mom <- mdl
-par.mom <- sigex.momfit(data,par.default,mdl.mom)
-psi.mom <- sigex.par2psi(par.mom,flag.default,mdl.mom)
+par.mom <- sigex.momfit(data, par.default, mdl.mom)
+psi.mom <- sigex.par2psi(par.mom, mdl.mom)
 #resid.mom <- sigex.resid(psi.mom,mdl.mom,data)
 
 thresh <- -1.66
 
 if(N > 1) {
-  reduced.mom <- sigex.reduce(data,par.mom,flag.default,mdl.mom,thresh,FALSE)
+  reduced.mom <- sigex.reduce(data, par.mom, mdl.mom, thresh, FALSE)
   mdl.mom <- reduced.mom[[1]]
   par.mom <- reduced.mom[[2]]
-  flag.mom <- sigex.default(mdl.mom,data)[[2]]
-  psi.mom <- sigex.par2psi(par.mom,flag.mom,mdl.mom)
+  psi.mom <- sigex.par2psi(par.mom, mdl.mom)
   #resid.mom <- sigex.resid(psi.mom,mdl.mom,data)
 }
 
 # bundle for default span
-analysis.mom <- sigex.bundle(data,transform,mdl.mom,psi.mom)
+analysis.mom <- sigex.bundle(data, transform, mdl.mom, psi.mom)
 
 ## Rough: reduced MOM model
 #data <- analysis.mom[[1]]

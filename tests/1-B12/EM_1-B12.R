@@ -53,6 +53,7 @@ for(i in 1:iters) {
   lik <- sig2lik(Sig, mdl, data)
   Sig.save[i+2, ] <- c(unlist(Sig), lik)
 
+  print(Sys.time())
   print(i)
   print(lik)
   print("------------------------------------")
@@ -61,43 +62,45 @@ for(i in 1:iters) {
 
 
 # # ---- Plot parameter estimates over time -------------------------------------
-# library(ggplot2)
-# library(dplyr)
-#
-#
-#
-# dat <- data.frame(Sig.save)
-# colnames(dat) <- c('t11','t21','t12','t22',
-#                    's11','s21','s12','s22',
-#                    'i11','i21','i12','i22','lik')
-# dat$iter <- 1:dim(dat)[1]
-#
-# # Plot Likelihood
-# dat.gath <- dat %>%
-#   select(lik, iter) %>%
-#   tidyr::gather('variable', 'value', -iter)
-#
-# ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
-#   geom_line() +
-#   geom_hline(yintercept = lik.true)
-#
-# # Plot all parameters
-# dat.gath <- dat %>%
-#   select(-lik) %>%
-#   tidyr::gather('variable', 'value', -iter)
-#
-# ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
-#   geom_line()
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+dat <- data.frame(Sig.save)
+dat$iter <- 1:dim(dat)[1]
+colnames(dat) <- c('t11','t21', 't31','t12', 't22', 't32', 't13', 't23', 't33',
+                   's11','s21', 's31','s12', 's22', 's32', 's13', 's23', 's33',
+                   'i11','i21', 'i31','i12', 'i22', 'i32', 'i13', 'i23', 'i33',
+                   'lik', 'iter')
+
+# Plot Likelihood
+dat.gath <- dat %>%
+  select(lik, iter) %>%
+  tidyr::gather('variable', 'value', -iter)
+
+gg_lik <-
+  ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
+  geom_line() +
+  geom_hline(yintercept = lik.true)
+
+# Plot all parameters
+dat.gath <- dat %>%
+  select(-lik) %>%
+  tidyr::gather('variable', 'value', -iter)
+
+gg_param <-
+  ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
+    geom_line()
+
+gridExtra::grid.arrange(gg_param, gg_lik, ncol = 2)
 
 
-
-
-pdf("EM-sim-results-2020-03-19.pdf")
-for(i in 1:28){
-  plot(ss[, i], type = 'b')
-  abline(h = ss[1, i])
-}
-dev.off()
+# pdf("EM-sim-results-2020-03-19.pdf")
+# for(i in 1:28){
+#   plot(ss[, i], type = 'b')
+#   abline(h = ss[1, i])
+# }
+# dev.off()
 
 
 

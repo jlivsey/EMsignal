@@ -1,9 +1,7 @@
-# source("sim1-B12.R")
-
 d = 12
-Gam1 = toeplitz(ARMA2acf(ma=rep(1,11), lag.max = (TT-1-d)))
-Gam2 = toeplitz(ARMA2acf(ma=-1, lag.max = (TT-1-d)))
-Gam3 = toeplitz(ARMA2acf(ma=c(rep(0,11), -1), lag.max = (TT-1-d)))
+Gam1 = toeplitz(ARMAauto(ma = rep(1,11), ar = NULL, lag.max = (TT-1-d)))
+Gam2 = toeplitz(ARMAauto(ma = -1, ar = NULL, lag.max = (TT-1-d)))
+Gam3 = toeplitz(ARMAauto(ma = c(rep(0,11), -1), ar = NULL, lag.max = (TT-1-d)))
 Gam  = list(Gam1, Gam2, Gam3)
 invGam = lapply(Gam, solve)
 
@@ -12,8 +10,8 @@ invGam = lapply(Gam, solve)
 # Choices: par.default, param.mom
 
 # Set Sig
-sig2lik(param2sig(par.default))
-sig2lik(param2sig(param.mom))
+sig2lik(param2sig(par.default), mdl, data)
+sig2lik(param2sig(param.mom),   mdl, data)
 Sig <- param2sig(par.default)
 
 # Set Error matrix
@@ -38,12 +36,12 @@ lMS = list(M, S)
 iters <- 10
 Nc <- length(unlist(Sig)) # number columns of save matrix
 Sig.save <- matrix(NA, nrow = iters+1, ncol= Nc+1) # storage container
-Sig.save[1, ] <- c(unlist(Sig), sig2lik(Sig)) # first row initial conditions
-for(i in 1:iters) {
+Sig.save[1, ] <- c(unlist(Sig), sig2lik(Sig, mdl, data)) # first row initial conditions
+for(i in 1:1) {
   out = EMiterate_1_B12(Sig, lMS, data, mdl)
   Sig = out[[1]]
   lMS = out[[2]]
-  lik <- sig2lik(Sig)
+  lik <- sig2lik(Sig, mdl , data)
   print(i)
   print(lik)
   print("------------------------------------")
