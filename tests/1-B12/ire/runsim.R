@@ -2,6 +2,8 @@ library(sigex)
 library(mvtnorm)
 library(EMsigex)
 
+sim <- function(){
+
 # ---- Simulate Data ----------------------------------------------------------
 N = 3
 T <- TT <- 300
@@ -259,7 +261,9 @@ gridExtra::grid.arrange(gg_param, gg_lik, ncol = 2)
 
 
 
+return(5)
 
+}
 
 
 
