@@ -1,4 +1,4 @@
-# source("sim1-B12.R")
+source("tests/1-B12/sim_1-B12.R")
 
 d = 12
 Gam1 = toeplitz(ARMAauto(ma = rep(1,11), ar = NULL, lag.max = (TT-1-d)))
@@ -40,7 +40,7 @@ lMS = list(M, S)
 
 # Sig.mle = param2sig(param.mle)
 
-iters <- 50
+iters <- 5
 Nc <- length(unlist(Sig.mom))
 Sig.save <- matrix(NA, nrow = iters+2, ncol= Nc+1)
 Sig.save[1, ] <- c(unlist(Sig.true), lik.true)
