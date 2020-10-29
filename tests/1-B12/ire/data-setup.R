@@ -27,7 +27,7 @@ dataALL.ts <- sigex.load(data = data,
                          start.date = start.date,
                          period = period,
                          epithets = c("Dim1","Dim2","Dim3"),
-                         plot = TRUE)
+                         plot = FALSE)
 
 # Prep for sigex
 transform <- "none"
@@ -41,8 +41,10 @@ data.ts <- sigex.prep(data.ts = dataALL.ts,
                       aggregate = aggregate,
                       subseries = subseries,
                       range = range,
-                      plot = TRUE)
+                      plot = FALSE)
 
 dataList[[i]] <- data.ts
 
 }
+
+save(dataList, file = 'dataList.Rdata')
