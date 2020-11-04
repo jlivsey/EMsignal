@@ -1,12 +1,14 @@
-library(sigex)
+# library(sigex)
 library(mvtnorm)
-library(EMsigex)
+# library(EMsigex)
+library(parallel)
+
+# ---- Load data ----
+load("dataList.Rdata")
 
 # ---- Simulation function -----------------------------------------------------
 
 sim <- function(data.ts){
-
-  data.ts <- dataList[[1]]
 
   tryCatch(
     expr = {
@@ -52,9 +54,9 @@ if(N > 1) {
 }
 
 # bundle and extract psi/param
-analysis.mom <- sigex.bundle(data.ts ,transform,mdl.mom,psi.mom)
-psi <- analysis.mom[[4]]
-param.mom <- sigex.psi2par(psi,mdl,data.ts)
+analysis.mom <- sigex.bundle(data.ts ,transform, mdl.mom, psi.mom)
+psi          <- analysis.mom[[4]]
+par.mom      <- sigex.psi2par(psi, mdl, data.ts)
 
 # ---- MLE --------------------------------------------------------------------
 
@@ -120,13 +122,13 @@ lik.true <- sig2lik(Sig.true, mdl, data.ts)
 
 # ---- Likelihood at the MOM  ------------------------------------------
 
-param = param.mom
+param = par.mom
 Sig.mom = param2sig(param)
 lik.mom <- sig2lik(Sig.mom, mdl, data.ts)
 
 # ---- Likelihood at the MLE  ------------------------------------------
 
-param = param.mle
+param = par.mle
 Sig.mle = param2sig(param)
 lik.mle <- sig2lik(Sig.mle, mdl, data.ts)
 
@@ -150,7 +152,7 @@ lMS = list(M, S)
 # ---- Run EM ----------------------------------------
 
 
-iters <- 2
+iters <- 50
 Nc <- length(unlist(Sig.mom))
 Sig.save <- matrix(NA, nrow = iters+2, ncol= Nc+1)
 Sig.save[1, ] <- c(unlist(Sig.true), lik.true)
@@ -160,7 +162,7 @@ for(i in 1:iters) {
   out = EMiterate_1_B12(Sig, lMS, data.ts, mdl)
   Sig = out[[1]]
   lMS = out[[2]]
-  lik <- sig2lik(Sig, mdl, data)
+  lik <- sig2lik(Sig, mdl, data.ts)
   Sig.save[i+2, ] <- c(unlist(Sig), lik)
   # print(Sys.time())
   # print(i)
@@ -190,8 +192,8 @@ return(list(lik.true = lik.true,
 
 }
 
-
-# out <- mclapply(dataList, sim)
+c <- detectCores()
+out <- mclapply(dataList, sim, mc.cores = c)
 # save(out, file = 'out.Rdata')
 
 
