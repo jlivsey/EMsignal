@@ -107,9 +107,9 @@ extract.irr      <- sigex.extract(data.ts, signal.irr,      mdl, param)
 
 
 
-# ------------------------------------------------------------------------------
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # ---- Start EM evaluation -----------------------------------------------------
-# ------------------------------------------------------------------------------
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 print("Define invGam")
 
@@ -208,11 +208,12 @@ return(list(lik.true = lik.true,
 }
 
 # ---- Run sim once ----
-out <- sim(dataList[[1]])
+# out <- sim(dataList[[1]])
 
 # ---- Run sim in parallel (Mac/linux) ----
+# library(parallel)
 # c <- detectCores()
-# out <- mclapply(dataList, sim, mc.cores = c)
+# out <- mclapply(dataList[1:4], sim, mc.cores = c)
 
 # ---- Save output ----
 # save(out, file = 'out.Rdata')
