@@ -1,12 +1,18 @@
 #' Runs sigex for EM algorithm
 #'
 #' @param param parameter list in sigex form
+#' @param data  mts object (sample size) x (dim)
+#' @param mdl   mdl object in sigex form
 #'
 #' @return list with M (error matricies) and S (signal estimates)
 #' @export
 #'
 
 sigexRun_1_B12 = function(param, data, mdl){
+
+  TT <- dim(data)[1]
+  N  <- dim(data)[2]
+
   # Run sigex with updated param
   signal.trendann <- sigex.signal(data,param,mdl,1)
   signal.seas     <- sigex.signal(data,param,mdl,2)

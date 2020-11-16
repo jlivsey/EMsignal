@@ -8,10 +8,10 @@
 #' @export
 #'
 
-EMiterate_1_B12 = function(Sig, lMS, data, mdl){
+EMiterate_1_B12 = function(Sig, lMS, data, mdl, invGam){
   J = length(Sig)
   for(j in 1:J){
-    Sig[[j]] = EMcritical_1_B12(j, Sig, lMS)
+    Sig[[j]] = EMcritical_1_B12(j, Sig, lMS, invGam)
   }
   param = sig2param(Sig, mdl, data)
   lMS = sigexRun_1_B12(param, data, mdl)

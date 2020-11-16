@@ -8,10 +8,12 @@
 #' @export
 #'
 
-EMcritical_1_B12 = function(j, Sig, lMS){
-  M = lMS[[1]]
-  S = lMS[[2]]
-  d = 12
+EMcritical_1_B12 = function(j, Sig, lMS, invGam){
+  M  = lMS[[1]]
+  S  = lMS[[2]]
+  N  = dim(M[[1]])[1]
+  TT = dim(M[[1]])[2]
+  d  = 12
   invSig = lapply(Sig, solve)
   outSig = matrix(0, N, N)
   for(k in (d+1):TT){

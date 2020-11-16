@@ -20,6 +20,7 @@ TT <- T
 N <- dim(data.ts)[2]
 
 # ---- Model ------------------------------------------------------------------
+print("setting up model")
 mdl <- NULL
 mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"trend",c(1,-1))
 mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"seasonal", rep(1,12))
@@ -36,7 +37,8 @@ psi.default <- sigex.par2psi(par.default, mdl)
 # Set param to TRUE values
 param = par.default
 
-# # ---- MOM estimates for param ------------------------------------------------
+# ---- MOM estimates for param ------------------------------------------------
+print("MOM estimation")
 mdl.mom <- mdl
 par.mom <- sigex.momfit(data.ts, par.default, mdl.mom)
 psi.mom <- sigex.par2psi(par.mom, mdl.mom)
@@ -60,6 +62,8 @@ par.mom      <- sigex.psi2par(psi, mdl, data.ts)
 
 # ---- MLE --------------------------------------------------------------------
 
+print("MLE estimation")
+
 ## load up the MOM model
 data.ts <- analysis.mom[[1]]
 mdl <- analysis.mom[[3]]
@@ -71,22 +75,24 @@ constraint <- NULL
 psi.mle <- sigex.par2psi(par.mom, mdl)
 
 ## run fitting: can be commented out, this takes a while
-fit.mle <- sigex.mlefit(data.ts,
-                        par.mom,
-                        constraint,
-                        mdl,
-                        method = "bfgs",
-                        debug  = FALSE)
-
-# set psi from mle estimation
-psi.mle <- sigex.eta2psi(fit.mle[[1]]$par,constraint)
-hess <- fit.mle[[1]]$hessian
+# fit.mle <- sigex.mlefit(data.ts,
+#                         par.mom,
+#                         constraint,
+#                         mdl,
+#                         method = "bfgs",
+#                         debug  = FALSE)
+#
+# # set psi from mle estimation
+# psi.mle <- sigex.eta2psi(fit.mle[[1]]$par,constraint)
+# hess <- fit.mle[[1]]$hessian
 
 # bundle for default span
 analysis.mle <- sigex.bundle(data.ts, transform, mdl, psi.mle)
 par.mle <- sigex.psi2par(psi.mle, mdl, data.ts)
 
 # ---- signal extraction from fit - Direct Matrix Approach ---------------------
+
+print("Signal extraction")
 
 # which params to use default/mom/mle
 param <- par.mom
@@ -105,6 +111,7 @@ extract.irr      <- sigex.extract(data.ts, signal.irr,      mdl, param)
 # ---- Start EM evaluation -----------------------------------------------------
 # ------------------------------------------------------------------------------
 
+print("Define invGam")
 
 d = 12
 Gam1 = toeplitz(ARMAauto(ma = rep(1,11), ar = NULL, lag.max = (TT-1-d)))
@@ -115,6 +122,8 @@ invGam = lapply(Gam, solve)
 
 # ---- Likelihood at the TRUE values ------------------------------------------
 
+print("True lik'd:")
+
 Sig1 <- diag(N)
 Sig1[1,2] <- Sig1[2,1] <- .75
 Sig.true <- list(Sig1, diag(N), diag(N))
@@ -122,11 +131,15 @@ lik.true <- sig2lik(Sig.true, mdl, data.ts)
 
 # ---- Likelihood at the MOM  ------------------------------------------
 
+print("MOM lik'd:")
+
 param = par.mom
 Sig.mom = param2sig(param)
 lik.mom <- sig2lik(Sig.mom, mdl, data.ts)
 
 # ---- Likelihood at the MLE  ------------------------------------------
+
+print("MLE lik'd:")
 
 param = par.mle
 Sig.mle = param2sig(param)
@@ -151,15 +164,17 @@ lMS = list(M, S)
 
 # ---- Run EM ----------------------------------------
 
+print('starting EM...')
 
-iters <- 50
+iters <- 3
 Nc <- length(unlist(Sig.mom))
 Sig.save <- matrix(NA, nrow = iters+2, ncol= Nc+1)
 Sig.save[1, ] <- c(unlist(Sig.true), lik.true)
 Sig.save[2, ] <- c(unlist(Sig.mom), lik.mom)
 for(i in 1:iters) {
+  cat("i = ", i, "\n")
     if(i==1) Sig <- Sig.mom
-  out = EMiterate_1_B12(Sig, lMS, data.ts, mdl)
+  out = EMiterate_1_B12(Sig, lMS, data.ts, mdl, invGam)
   Sig = out[[1]]
   lMS = out[[2]]
   lik <- sig2lik(Sig, mdl, data.ts)
@@ -192,8 +207,14 @@ return(list(lik.true = lik.true,
 
 }
 
-c <- detectCores()
-out <- mclapply(dataList, sim, mc.cores = c)
+# ---- Run sim once ----
+out <- sim(dataList[[1]])
+
+# ---- Run sim in parallel (Mac/linux) ----
+# c <- detectCores()
+# out <- mclapply(dataList, sim, mc.cores = c)
+
+# ---- Save output ----
 # save(out, file = 'out.Rdata')
 
 
