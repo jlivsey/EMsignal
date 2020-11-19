@@ -2,7 +2,11 @@
 # Unpack results of a simulation run on the IRE.
 # Ran 200 replications of 3-dimensional series.
 
+library(EMsigex)
+library(sigex)
+
 load("out-IRE-20201117.Rdata")
+load("dataList.Rdata")
 
 # --- True Params ----
 
@@ -11,26 +15,36 @@ Sig1[1,2] <- Sig1[2,1] <- .75
 Sig.true <- list(Sig1, diag(N), diag(N))
 
 # ---- MLE sigma ----
-par.mle <- sigex.psi2par(psi.mle, mdl, data.ts)
-Sig.mle = param2sig(param)
+N <- dim(dataList[[1]])[2]
+mdl <- NULL
+mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"trend",c(1,-1))
+mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"seasonal", rep(1,12))
+mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"irregular",1)
+mdl <- sigex.meaninit(mdl, dataList[[1]], 0) # regressors
+
+Sig.mle <- matrix(NA, nrow = 200, ncol = 27) # storage
+for(i in 1:200){
+  param = sigex.psi2par(out[[i]]$psi.mle, mdl, dataList[[i]])
+  Sig.mle[i, ] = unlist(param2sig(param))
+}
 
 
 # ---- Likelihood compare ----
-
+# storage
 Lik <- data.frame(
     tru = rep(NA, 200),
     mom = rep(NA, 200),
     mle = rep(NA, 200),
     em  = rep(NA, 200)
 )
-
+# populate dataframe with results
 for(i in 1:200){
   Lik$tru[i] <- out[[i]]$lik.true
   Lik$mom[i] <- out[[i]]$lik.mom
   Lik$mle[i] <- out[[i]]$lik.mle
   Lik$em[i]  <- out[[i]]$Sig.save[52, 28]
 }
-
+# scatter plot
 plot(x = c(1, 200),
      y = range(Lik[, 3:4]),
      type = "n",
@@ -40,10 +54,9 @@ points(Lik$tru, pch = 19)
 points(Lik$mom, pch = 19, col = 2)
 points(Lik$mle, pch = 19, col = 3)
 points(Lik$em,  pch = 19, col = 4)
-
-cbind(mleLik, emLik, emLik - mleLik)
-
-plot_function(out[[189]]$Sig.save)
+# print MLE vs EM
+attach(Lik)
+cbind(mle, em, em - mle)
 
 boxplot(Lik)
 
