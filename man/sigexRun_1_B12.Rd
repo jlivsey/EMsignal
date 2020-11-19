@@ -8,6 +8,10 @@ sigexRun_1_B12(param, data, mdl)
 }
 \arguments{
 \item{param}{parameter list in sigex form}
+
+\item{data}{mts object (sample size) x (dim)}
+
+\item{mdl}{mdl object in sigex form}
 }
 \value{
 list with M (error matricies) and S (signal estimates)

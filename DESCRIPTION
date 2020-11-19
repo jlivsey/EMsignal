@@ -7,5 +7,5 @@ Depends: R (>= 3.4.3)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Imports: mvtnorm, sigex

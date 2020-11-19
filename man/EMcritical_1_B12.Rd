@@ -4,7 +4,7 @@
 \alias{EMcritical_1_B12}
 \title{Calculate updated Sigma values at EM critical point}
 \usage{
-EMcritical_1_B12(j, Sig, lMS)
+EMcritical_1_B12(j, Sig, lMS, invGam)
 }
 \arguments{
 \item{j}{component of mdl}

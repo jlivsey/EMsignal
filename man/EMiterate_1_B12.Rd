@@ -4,7 +4,7 @@
 \alias{EMiterate_1_B12}
 \title{single iteration of EM algorithm}
 \usage{
-EMiterate_1_B12(Sig, lMS, data, mdl)
+EMiterate_1_B12(Sig, lMS, data, mdl, invGam)
 }
 \arguments{
 \item{Sig}{list with each element of list being an NxN sigma matrix}
