@@ -16,21 +16,23 @@ gen_trendComp = function(n, Phi, Sig, burn=1000){
   N = n+burn
   Ndim = dim(Sig)[1]
 
-  if(Ndim==1){ # handle univariate case first
+  if(Ndim==1 || is.null(Ndim)){ # handle univariate case first
     w = rnorm(n = N, mean = 0, sd = as.numeric(sqrt(Sig)))
-    s = w[1]
+    s = rep(NA, N) # storage
+    s[1] = w[1]
     for(i in 2:(N)){
       new.s = Phi * s[i-1] - w[i]
-      s = c(s, new.s)
+      s[i] = new.s
     }
     return(s[(burn+1):N])
   } # end of univariate if() statement
 
-  w = rmvnorm(n = N+1, mean = rep(0,Ndim), sigma = Sig)
+  w = mvtnorm::rmvnorm(n = N+1, mean = rep(0,Ndim), sigma = Sig)
+  s = matrix(NA, N+1, Ndim) # storage
   s = w[1:2, ] # Need at least 2 here or don't get matrix class object
   for(i in 3:(N+1)){
     new.s = Phi %*% s[i-1, ] - w[i, ]
-    s = rbind(s, t(new.s))
+    s[i, ] = t(new.s)
   }
   return(s[(burn+1):N, ])
 }

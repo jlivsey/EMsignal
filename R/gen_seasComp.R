@@ -17,22 +17,24 @@ gen_seasComp = function(n, Phi, Sig, burn=10^3, seasonal.period=12){
   N = n+burn
   Ndim = dim(Sig)[1]
 
-  if(Ndim==1){ # handle univariate case first
+  if(Ndim==1 || is.null(Ndim)){ # handle univariate case first
     w = rnorm(n = N, mean = 0, sd = sqrt(Sig))
-    s = w[1:seasonal.period]
+    s = rep(NA, N) # storage
+    s[1:seasonal.period] = w[1:seasonal.period] # initial values
     for(i in (seasonal.period+1):N){
       new.s = -1*sum(s[(i-seasonal.period+1):(i-1)]) + w[i]
-      s = c(s, new.s)
+      s[i] = new.s
     }
     return(s[(burn+1):N])
 
   } # end of univariate if() statement
 
-  w = rmvnorm(n = N, mean = rep(0,Ndim), sigma = Sig)
-  s = w[1:seasonal.period, ]
+  w = mvtnorm::rmvnorm(n = N, mean = rep(0,Ndim), sigma = Sig)
+  s = matrix(NA, N, Ndim) # storage
+  s[1:seasonal.period, ] = w[1:seasonal.period, ] # initial values
   for(i in (seasonal.period+1):N){
     new.s = -1*colSums(s[(i-seasonal.period+1):(i-1), ]) + w[i,]
-    s = rbind(s, t(new.s))
+    s[i] = t(new.s)
   }
   return(s[(burn+1):N, ])
 }
