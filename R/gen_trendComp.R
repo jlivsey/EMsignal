@@ -29,7 +29,7 @@ gen_trendComp = function(n, Phi, Sig, burn=1000){
 
   w = mvtnorm::rmvnorm(n = N+1, mean = rep(0,Ndim), sigma = Sig)
   s = matrix(NA, N+1, Ndim) # storage
-  s = w[1:2, ] # Need at least 2 here or don't get matrix class object
+  s[1:2, ] = w[1:2, ] # Need at least 2 here or don't get matrix class object
   for(i in 3:(N+1)){
     new.s = Phi %*% s[i-1, ] - w[i, ]
     s[i, ] = t(new.s)
