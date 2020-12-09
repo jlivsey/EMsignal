@@ -34,7 +34,7 @@ gen_seasComp = function(n, Phi, Sig, burn=10^3, seasonal.period=12){
   s[1:seasonal.period, ] = w[1:seasonal.period, ] # initial values
   for(i in (seasonal.period+1):N){
     new.s = -1*colSums(s[(i-seasonal.period+1):(i-1), ]) + w[i,]
-    s[i] = t(new.s)
+    s[i, ] = t(new.s)
   }
   return(s[(burn+1):N, ])
 }
