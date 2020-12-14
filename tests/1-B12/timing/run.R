@@ -199,17 +199,25 @@ timeSim <- function(data.ts){
 
       }) # end of system.time for EM
 
+      # ---- Final object to return ----
+      outList <-
+        list(
+          mle_time = mle_time,
+          em_time  = em_time,
+          lik.true = lik.true,
+          lik.mom  = lik.mom,
+          lik.mle  = lik.mle,
+          psi.mle  = psi.mle,
+          psi.mom  = psi.mom,
+          Sig.save = Sig.save
+        )
+
+      # ---- Construct unique file name and output to wdir ----
+      filename <- paste0(TT, "_", N, ".Rdata")
+      save(outList, file = filename)
+
       # ---- return timing results ----
-      return(list(
-        mle_time = mle_time,
-        em_time  = em_time,
-        lik.true = lik.true,
-        lik.mom  = lik.mom,
-        lik.mle  = lik.mle,
-        psi.mle  = psi.mle,
-        psi.mom  = psi.mom,
-        Sig.save = Sig.save
-      ))
+      return(outList)
 
     }, # END of tryCatch expr = {
     error = function(e){
