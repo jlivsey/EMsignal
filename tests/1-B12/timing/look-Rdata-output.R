@@ -1,4 +1,7 @@
 
+setwd("~/GitHub/EMsignal/tests/1-B12/timing/Rdata-output")
+
+
 # Load parameter values data.frame
 load("~/GitHub/EMsignal/tests/1-B12/timing/paramDf.Rdata")
 df <- paramDf
