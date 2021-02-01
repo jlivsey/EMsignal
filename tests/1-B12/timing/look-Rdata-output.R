@@ -24,21 +24,34 @@ for(i in 1:20){
 
 
 library(dplyr)
-# df2 <- filter(df, TT = 100)
-df2 <- tidyr::drop_na(df)
-df2
-
-df3 <- reshape2::melt(df2, measure.vars = c("mle_time", "em_time"))
-
-
+library(tidyr)
+library(reshape2)
 library(ggplot2)
-ggplot(df3, aes(x = TT, y = value, group = variable)) +
+
+# data.frame for plotting
+df_ggplot <- df %>%
+  rename(MLE_time = mle_time) %>%
+  rename(EM_time  = em_time) %>%
+  drop_na() %>%
+  melt(measure.vars = c("MLE_time", "EM_time")) %>%
+  mutate(N = as.factor(N)) %>%
+  mutate(T = as.factor(TT))
+
+# Change levels for plotting
+levels(df_ggplot$N)
+levels(df_ggplot$N) <- c("N=2", "N=3", "N=4", "N=5")
+
+# Change levles for plotting
+levels(df_ggplot$T)
+levels(df_ggplot$T) <- c("T=50", "T=100", "T=200", "T=400", "T=800")
+
+
+ggplot(df_ggplot, aes(x = TT, y = value, group = variable)) +
   geom_line(aes(color = variable)) +
   geom_point() +
   facet_wrap(~N)
 
-
-ggplot(df3, aes(x = N, y = value, group = variable)) +
+ggplot(df_ggplot, aes(x = N, y = value, group = variable)) +
   geom_line(aes(color = variable)) +
   geom_point() +
   facet_wrap(~TT)
