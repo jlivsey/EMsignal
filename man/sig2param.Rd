@@ -8,6 +8,10 @@ sig2param(Sig, mdl, data)
 }
 \arguments{
 \item{Sig}{list with each element of list being an NxN sigma matrix}
+
+\item{mdl}{sigex mdl object}
+
+\item{data}{time series object}
 }
 \value{
 updated param list

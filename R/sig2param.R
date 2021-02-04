@@ -1,6 +1,8 @@
 #' Convert list of Sigma matricies to sigex param list
 #'
 #' @param Sig list with each element of list being an NxN sigma matrix
+#' @param mdl sigex mdl object
+#' @param data time series object
 #'
 #' @return updated param list
 #' @export
