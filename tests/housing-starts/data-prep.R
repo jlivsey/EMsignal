@@ -13,7 +13,7 @@ dataALL.ts <- sigex.load(starts,start.date,period,c("South","West","NE","MW"),TR
 ## select span and transforms
 
 ## all data for NE-MW with log transform
-transform <- "log"
+transform <- "none"
 aggregate <- FALSE
 subseries <- c(1,2,3,4)
 begin.date <- start(dataALL.ts)
@@ -28,9 +28,9 @@ TT <- T
 # ---- Model ------------------------------------------------------------------
 mdl <- NULL
 # mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"trend",c(1,-1))   # first diff
-mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"trend",c(1,-2,1)) # second diff
-mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"seasonal", rep(1,12))
-mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),0,"irregular",1)
+mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),NULL,"trend",c(1,-2,1)) # second diff
+mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),NULL,"seasonal", rep(1,12))
+mdl <- sigex.add(mdl,seq(1,N),"arma",c(0,0),NULL,"irregular",1)
 # regressors:
 mdl <- sigex.meaninit(mdl, data, 0)
 
@@ -47,16 +47,21 @@ mdl.mom <- mdl
 par.mom <- sigex.momfit(data, par.default, mdl.mom)
 psi.mom <- sigex.par2psi(par.mom, mdl.mom)
 #resid.mom <- sigex.resid(psi.mom,mdl.mom,data)
+sigex.lik(psi.mom,mdl.mom,data,FALSE)
 
-thresh <- -1.66
+## examine condition numbers
+log(sigex.conditions(data, psi.mom, mdl.mom))
+
+thresh <- -6.22
 
 if(N > 1) {
-  reduced.mom <- sigex.reduce(data, par.mom, mdl.mom, thresh, FALSE)
+  reduced.mom <- sigex.reduce(data, par.mom, mdl.mom, thresh, TRUE)
   mdl.mom <- reduced.mom[[1]]
   par.mom <- reduced.mom[[2]]
   psi.mom <- sigex.par2psi(par.mom, mdl.mom)
   #resid.mom <- sigex.resid(psi.mom,mdl.mom,data)
 }
+
 
 # bundle for default span
 analysis.mom <- sigex.bundle(data, transform, mdl.mom, psi.mom)
@@ -98,7 +103,7 @@ s0.hat = extract.irr[[1]][, subseries]
 # dev.off()
 
 # --- Filter weights ----------------------------------------------------------
-FF = signal.trendann[[1]]
+FF = signal.seas[[1]]
 FF = block2array(FF, N, T)
 fw = FF[1, T/2, 1, ]
 plot(fw, type="l")

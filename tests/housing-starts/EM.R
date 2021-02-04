@@ -12,7 +12,7 @@ invGam = lapply(Gam, solve)
 # Set Sig
 sig2lik(param2sig(par.default), mdl, data)
 sig2lik(param2sig(param.mom),   mdl, data)
-Sig <- param2sig(par.default)
+Sig <- param2sig(param.mom)
 
 # Set Error matrix
 M1 = block2array(signal.trendann[[2]], N = N, TT = TT)
@@ -31,14 +31,14 @@ S = list(S1d, S2d, S3d)
 
 lMS = list(M, S)
 
-# -----------------------------------------------------------------------------
+# ---- Main EM loop ------------------------------------------------------------
 
-iters <- 10
+iters <- 20
 Nc <- length(unlist(Sig)) # number columns of save matrix
 Sig.save <- matrix(NA, nrow = iters+1, ncol= Nc+1) # storage container
 Sig.save[1, ] <- c(unlist(Sig), sig2lik(Sig, mdl, data)) # first row initial conditions
-for(i in 1:1) {
-  out = EMiterate_1_B12(Sig, lMS, data, mdl)
+for(i in 11:iters) {
+  out = EMiterate_1_B12(Sig, lMS, data, mdl, invGam)
   Sig = out[[1]]
   lMS = out[[2]]
   lik <- sig2lik(Sig, mdl , data)
@@ -46,6 +46,7 @@ for(i in 1:1) {
   print(lik)
   print("------------------------------------")
   Sig.save[i+1, ] <- c(unlist(Sig), lik)
+  save(Sig.save, file = "20210203-Sigsave.Rdata")
 }
 
 
@@ -54,19 +55,17 @@ library(ggplot2)
 library(dplyr)
 
 dat <- data.frame(Sig.save)
-colnames(dat) <- c('t11','t21','t12','t22',
-                   's11','s21','s12','s22',
-                   'i11','i21','i12','i22','lik')
 dat$iter <- 1:dim(dat)[1]
+dat2 <- dat %>%
+  rename(lik = X49)
 
 # Plot Likelihood
-dat.gath <- dat %>%
-  select(lik, iter) %>%
-  tidyr::gather('variable', 'value', -iter)
+dat.gath <- dat2 %>%
+  tidyr::gather('variable', 'value', -iter, -lik)
 
 ggplot(dat.gath, aes(x = iter, y = value, colour = variable)) +
-  geom_line() +
-  geom_hline(yintercept = lik.true)
+  geom_line()
+  # geom_hline(yintercept = lik.true)
 
 # Plot all parameters
 dat.gath <- dat %>%
