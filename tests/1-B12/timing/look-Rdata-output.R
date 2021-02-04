@@ -54,4 +54,4 @@ ggplot(df_ggplot, aes(x = TT, y = value, group = variable)) +
 ggplot(df_ggplot, aes(x = N, y = value, group = variable)) +
   geom_line(aes(color = variable)) +
   geom_point() +
-  facet_wrap(~TT)
+  facet_wrap(~T)
