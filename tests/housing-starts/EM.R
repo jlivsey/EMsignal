@@ -33,11 +33,11 @@ lMS = list(M, S)
 
 # ---- Main EM loop ------------------------------------------------------------
 
-iters <- 20
+iters <- 2
 Nc <- length(unlist(Sig)) # number columns of save matrix
 Sig.save <- matrix(NA, nrow = iters+1, ncol= Nc+1) # storage container
 Sig.save[1, ] <- c(unlist(Sig), sig2lik(Sig, mdl, data)) # first row initial conditions
-for(i in 11:iters) {
+for(i in 1:iters) {
   out = EMiterate_1_B12(Sig, lMS, data, mdl, invGam)
   Sig = out[[1]]
   lMS = out[[2]]
@@ -46,7 +46,7 @@ for(i in 11:iters) {
   print(lik)
   print("------------------------------------")
   Sig.save[i+1, ] <- c(unlist(Sig), lik)
-  save(Sig.save, file = "20210203-Sigsave.Rdata")
+  # save(Sig.save, file = "20210203-Sigsave.Rdata")
 }
 
 
