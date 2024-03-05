@@ -10,8 +10,10 @@ load("dataList.Rdata")
 
 sim <- function(data.ts){
 
-  tryCatch(
-    expr = {
+tryCatch(
+expr = {
+
+start_time = Sys.time()
 
 # ---- Modeling ---------------------------------------------------------------
 transform = "none"
@@ -43,7 +45,7 @@ mdl.mom <- mdl
 par.mom <- sigex.momfit(data.ts, par.default, mdl.mom)
 psi.mom <- sigex.par2psi(par.mom, mdl.mom)
 
-thresh <- -1.66
+thresh = -1.66
 if(N > 1) {
   reduced.mom <- sigex.reduce(data.ts = data.ts,
                               param = par.mom,
@@ -61,7 +63,6 @@ psi          <- analysis.mom[[4]]
 par.mom      <- sigex.psi2par(psi, mdl, data.ts)
 
 # ---- MLE --------------------------------------------------------------------
-
 print("MLE estimation")
 
 ## load up the MOM model
@@ -166,32 +167,43 @@ lMS = list(M, S)
 
 print('starting EM...')
 
-iters <- 3
+iters = 300
+thresh_em = 10^-4
+
 Nc <- length(unlist(Sig.mom))
 Sig.save <- matrix(NA, nrow = iters+2, ncol= Nc+1)
 Sig.save[1, ] <- c(unlist(Sig.true), lik.true)
 Sig.save[2, ] <- c(unlist(Sig.mom), lik.mom)
 for(i in 1:iters) {
-  cat("i = ", i, "\n")
-    if(i==1) Sig <- Sig.mom
+  #cat("i = ", i, "\n")
+    if(i==1){
+      Sig <- Sig.mom
+      lik_last = 10^6
+    }
   out = EMiterate_1_B12(Sig, lMS, data.ts, mdl, invGam)
   Sig = out[[1]]
   lMS = out[[2]]
   lik <- sig2lik(Sig, mdl, data.ts)
   Sig.save[i+2, ] <- c(unlist(Sig), lik)
+  lik_diff = lik_last - lik
+  lik_last = lik
+  if(lik_diff < thresh_em) break
   # print(Sys.time())
   # print(i)
   # print(lik)
   # print("------------------------------------")
 }
 
+end_time = Sys.time()
+run_time_secs = difftime(end_time, start_time, units = "secs")
 
 return(list(lik.true = lik.true,
             lik.mom  = lik.mom,
             lik.mle  = lik.mle,
             psi.mle  = psi.mle,
             psi.mom  = psi.mom,
-            Sig.save = Sig.save))
+            Sig.save = Sig.save,
+            run_time_secs = run_time_secs))
 
   }, # END of expr = {
   error = function(e){
@@ -208,15 +220,26 @@ return(list(lik.true = lik.true,
 }
 
 # ---- Run sim once ----
-# out <- sim(dataList[[1]])
+out <- sim(dataList[[1]])
 
 # ---- Run sim in parallel (Mac/linux) ----
-# library(parallel)
-# c <- detectCores()
-# out <- mclapply(dataList[1:4], sim, mc.cores = c)
+library(parallel)
+c <- detectCores()
+
+{
+start_parallel = Sys.time()
+
+out_101_150 <- mclapply(dataList[101:150], sim, mc.cores = c-1)
+
+end_parallel = Sys.time()
+run_parallel_hrs = difftime(end_parallel,
+                         start_parallel,
+                         units = "hours")
+}
+
 
 # ---- Save output ----
-# save(out, file = 'out.Rdata')
+save(out, file = 'out-20240304.Rdata')
 
 
 
