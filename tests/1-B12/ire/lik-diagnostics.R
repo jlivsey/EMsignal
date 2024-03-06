@@ -1,12 +1,12 @@
 # What was the difference in lik'd after 50 iters?
 
-likVal = matrix(NA, nrow = 5, ncol = 200)
-for(i in 1:200){
+likVal = matrix(NA, nrow = 5, ncol = length(out))
+for(i in 1:length(out)){
   likVal[, i] = out[[i]]$Sig.save[48:52, 28]
 }
 
-mindiff = rep(NA, 200)
-for(i in 1:200){
+mindiff = rep(NA, length(out))
+for(i in 1:length(out)){
   mindiff[i] = out[[i]]$Sig.save[, 28] |> diff() |> abs() |> min()
 }
 sum(mindiff < 10^-3)
