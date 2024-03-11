@@ -5,7 +5,8 @@
 library(EMsigex)
 library(sigex)
 
-load("out-IRE-20201117.Rdata")
+# load("out-IRE-20201117.Rdata")
+out = readRDS("~/Documents/GitHub/EMsignal/tests/1-B12/results/out-20240309.rds")
 load("dataList.Rdata")
 
 # --- True Params ----
@@ -55,7 +56,7 @@ for(i in 1:200){
   Sig.em[i, ] = out[[i]]$Sig.save[52, 1:27]
 }
 
-# pdf(file = "EMestimates.pdf", width = 15, height = 10)
+#pdf(file = "EMestimates_R1.pdf", width = 15, height = 10)
 boxplot(Sig.em, main = "EM estimates", xaxt = 'n')
 axis(1,
      at=1:27,
@@ -74,7 +75,7 @@ axis(1,
   # add segments
   segments(x0 = x0s, x1 = x1s, y0 = y0s, col = "red")
 }
-# dev.off()
+#dev.off()
 
 # ---- Likelihood compare ----
 # storage
