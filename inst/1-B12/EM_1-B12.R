@@ -21,7 +21,7 @@ param = param.mom
 Sig.mom = param2sig(param)
 (lik.mom <- sig2lik(Sig.mom, mdl, data))
 
-M1 = block2array(signal.trendann[[2]], N = N, TT = TT)
+M1 = block2array(signal.trendann[[2]], N = N, TT = TT) # M1_t = M1[, t, , t]
 M2 = block2array(signal.seas[[2]],     N = N, TT = TT)
 M3 = block2array(signal.irr[[2]],      N = N, TT = TT)
 M = list(M1, M2, M3)
@@ -40,14 +40,14 @@ lMS = list(M, S)
 
 # Sig.mle = param2sig(param.mle)
 
-iters <- 5
+iters <- 30
 Nc <- length(unlist(Sig.mom))
 Sig.save <- matrix(NA, nrow = iters+2, ncol= Nc+1)
 Sig.save[1, ] <- c(unlist(Sig.true), lik.true)
 Sig.save[2, ] <- c(unlist(Sig.mom), lik.mom)
-for(i in 1:iters) {
+for(i in 16:iters) {
   if(i==1) Sig <- Sig.mom
-  out = EMiterate_1_B12(Sig, lMS, data, mdl)
+  out = EMiterate_1_B12(Sig, lMS, data, mdl, invGam)
   Sig = out[[1]]
   lMS = out[[2]]
   lik <- sig2lik(Sig, mdl, data)
@@ -58,6 +58,21 @@ for(i in 1:iters) {
   print(lik)
   print("------------------------------------")
 }
+
+# MOM estimates
+Sig_trend_mom = Sig.save[2, 1:9]   |> matrix(3, 3)
+Sig_seas_mom  = Sig.save[2, 10:18] |> matrix(3, 3)
+Sig_irr_mom   = Sig.save[2, 19:27] |> matrix(3, 3)
+
+# EM estimates
+Sig_trend_em = Sig.save[iters, 1:9]   |> matrix(3, 3)
+Sig_seas_em  = Sig.save[iters, 10:18] |> matrix(3, 3)
+Sig_irr_em   = Sig.save[iters, 19:27] |> matrix(3, 3)
+
+# Compare
+cbind(Sig_trend_mom, Sig_trend_em, Sig_trend_mom - Sig_trend_em) |> round(3)
+cbind(Sig_seas_mom, Sig_seas_em, Sig_seas_mom - Sig_seas_em) |> round(3)
+cbind(Sig_irr_mom, Sig_irr_em, Sig_irr_mom - Sig_irr_em) |> round(3)
 
 
 

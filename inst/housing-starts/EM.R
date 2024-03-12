@@ -33,20 +33,34 @@ lMS = list(M, S)
 
 # ---- Main EM loop ------------------------------------------------------------
 
-iters <- 2
+iters = 300
+thresh_em = 10^-4
+
 Nc <- length(unlist(Sig)) # number columns of save matrix
 Sig.save <- matrix(NA, nrow = iters+1, ncol= Nc+1) # storage container
 Sig.save[1, ] <- c(unlist(Sig), sig2lik(Sig, mdl, data)) # first row initial conditions
+
 for(i in 1:iters) {
+  if(i==1){
+    Sig = Sig.mom
+    lik_last = 10^6
+  }
   out = EMiterate_1_B12(Sig, lMS, data, mdl, invGam)
   Sig = out[[1]]
   lMS = out[[2]]
   lik <- sig2lik(Sig, mdl , data)
-  print(i)
-  print(lik)
-  print("------------------------------------")
+
+  if(FALSE){
+    print(i)
+    print(lik)
+    print("------------------------------------")
+  }
+
   Sig.save[i+1, ] <- c(unlist(Sig), lik)
-  # save(Sig.save, file = "20210203-Sigsave.Rdata")
+
+  lik_diff = lik_last - lik
+  lik_last = lik
+  if(lik_diff < thresh_em) break
 }
 
 

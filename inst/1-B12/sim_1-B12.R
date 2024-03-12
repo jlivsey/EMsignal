@@ -4,7 +4,7 @@ library(EMsigex)
 
 # ---- Simulate Data ----------------------------------------------------------
 N = 3
-T <- TT <- 300
+T <- TT <- 500
 t = 1:T
 Phi=diag(N)
 Sig=diag(N); Sig[1,2] <- Sig[2,1] <- .75
