@@ -43,3 +43,4 @@ vignettes/*.pdf
 data/.DS_Store
 
 tests/imm/imm_2008_2011.pdf
+/inst/1-B12/results
