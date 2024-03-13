@@ -113,26 +113,59 @@ N <- dim(x)[1]
 T <- dim(x)[2]
 
 
-#######################
-# Default Model
+# ---- Define Model -----------------------------------------------------------
 
-# stochastic effects
-delta.trend <- c(1,-1)
-delta.ann <- c(1,-2*cos(2*pi/365),1)
-def <- c(0,1,0,1)
+mdl <-
+  # Trend component
+  sigex.add(
+    mdl = NULL,
+    vrank = 1:N,
+    class = "canonWN",
+    order = c(0, 0),
+    bounds = 0,
+    name = "trend",
+    delta = c(1, -1)
+  ) |>
+  # First atomic component
+  sigex.add(
+    vrank = 1:N,
+    class = "canonWN",
+    order = c(0, 0),
+    bounds = 0,
+    name = "atomic-one",
+    delta = c(1,-2*cos(2*pi/7),1)
+  ) |>
+  # Second atomic component
+  sigex.add(
+    vrank = 1:N,
+    class = "canonWN",
+    order = c(0, 0),
+    bounds = 0,
+    name = "atomic-two",
+    delta = c(1,-2*cos(4*pi/7),1)
+  ) |>
+  # Third atomic component
+  sigex.add(
+    vrank = 1:N,
+    class = "canonWN",
+    order = c(0, 0),
+    bounds = 0,
+    name = "atomic-three",
+    delta = c(1,-2*cos(6*pi/7),1)
+  ) |>
+  # Irregular component
+  sigex.add(
+    vrank = 1:N,
+    class = "wn",
+    order = c(0, 0),
+    bounds = 0,
+    name = "irregular",
+    delta = 1
+  ) |>
+  # Fixed effects
+  sigex.meaninit(data, 0)
 
-mdl <- NULL
-mdl <- sigex.add(mdl,seq(1,N),"canonWN",delta.trend,def)				# trend-cycle (annual cycle)
-mdl <- sigex.add(mdl,seq(1,N),"canonWN",c(1,-2*cos(2*pi/7),1),def)      	# first atomic weekly seas
-mdl <- sigex.add(mdl,seq(1,N),"canonWN",c(1,-2*cos(4*pi/7),1),def)      	# second atomic weekly seas
-mdl <- sigex.add(mdl,seq(1,N),"canonWN",c(1,-2*cos(6*pi/7),1),def)      	# third atomic weekly seas
-mdl <- sigex.add(mdl,seq(1,N),"wn",1,def)   						# irregular
-
-# fixed effects
-
-mdl <- sigex.meaninit(mdl,data,0)
-
-par.default <- sigex.default(mdl,data)[[1]]
+par.default <- sigex.default(mdl, data, NULL)
 flag.default <- sigex.default(mdl,data)[[2]]
 psi.default <- sigex.par2psi(par.default,flag.default,mdl)
 #sigex.psi2par(psi.default,mdl,data)	# check
